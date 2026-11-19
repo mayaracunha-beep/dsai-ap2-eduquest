@@ -1410,3 +1410,118 @@ main.principal-estreito .titulo-pagina {
     grid-template-columns: 1fr;
   }
 }
+
+/* ============================ loja, inventário e moedas (D12) ============================ */
+
+.saldo-moedas {
+  display: inline-flex;
+  padding: 0.2rem var(--esp-3);
+  border-radius: var(--raio-pill);
+  background: var(--aviso-suave);
+  color: var(--aviso);
+  font-size: var(--tam-h3);
+  font-weight: var(--peso-forte);
+}
+
+.grade-loja {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+  gap: var(--esp-4);
+  list-style: none;
+  margin: var(--esp-4) 0;
+  padding: 0;
+}
+
+.item-loja {
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-2);
+  padding: var(--esp-4);
+  border: 1px solid var(--borda);
+  border-radius: var(--raio-m);
+  background: var(--superficie);
+  box-shadow: var(--sombra-1);
+}
+
+.item-loja.item-equipado {
+  border-color: var(--sucesso);
+  background: var(--sucesso-suave);
+}
+
+.item-loja-topo {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--esp-2);
+}
+
+.item-loja-topo h2,
+.item-loja-topo h3 {
+  margin: 0;
+  font-size: var(--tam-h3);
+}
+
+.item-loja-categoria {
+  padding: 0 var(--esp-2);
+  border-radius: var(--raio-pill);
+  background: var(--primaria-suave);
+  color: var(--primaria-escura);
+  font-size: var(--tam-sec);
+  white-space: nowrap;
+}
+
+.item-loja-descricao,
+.item-loja-estoque {
+  margin: 0;
+  color: var(--texto-sec);
+  font-size: var(--tam-sec);
+}
+
+.item-loja-preco {
+  margin: 0;
+  font-weight: var(--peso-forte);
+}
+
+.item-loja-possui {
+  margin: 0;
+  color: var(--sucesso);
+  font-weight: var(--peso-medio);
+}
+
+.item-loja button {
+  margin-top: auto;
+}
+
+.lista-config-loja {
+  list-style: none;
+  margin: var(--esp-4) 0 0;
+  padding: 0;
+  display: grid;
+  gap: var(--esp-3);
+}
+
+.linha-config-loja {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: var(--esp-2) var(--esp-3);
+  align-items: center;
+  padding: var(--esp-3);
+  border: 1px solid var(--borda);
+  border-radius: var(--raio-s);
+  background: var(--superficie-alt);
+}
+
+.linha-config-loja label {
+  grid-column: 1 / -1;
+  font-size: var(--tam-sec);
+}
+
+.linha-config-loja input[type='number'] {
+  grid-column: 1 / -1;
+}
+
+@media (max-width: 768px) {
+  .grade-loja {
+    grid-template-columns: 1fr;
+  }
+}

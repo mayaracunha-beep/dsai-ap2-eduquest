@@ -3,6 +3,7 @@ import { erroNaoEncontrado, erroProibido, erroValidacao } from '../erros'
 import { prisma } from '../prisma'
 import { uuidValido } from '../tipos'
 import { conquistasDoPerfil, type ConquistaDoPerfil } from './conquistas'
+import { itensDoPerfil, type ItemDoPerfil } from './loja'
 import { nivelDoEstudante } from './xp'
 
 export interface RespostaPerfil {
@@ -11,7 +12,7 @@ export interface RespostaPerfil {
   bio?: string | null
   nivel: number | null
   conquistas: ConquistaDoPerfil[]
-  inventario: []
+  inventario: ItemDoPerfil[]
 }
 
 interface UsuarioComPerfil {
@@ -29,7 +30,8 @@ async function montarResposta(usuario: UsuarioComPerfil): Promise<RespostaPerfil
     nivel: usuario.papel === 'estudante' ? await nivelDoEstudante(prisma, usuario.id) : null,
     // R-C9 (D8): desbloqueadas, visíveis a qualquer autenticado; professor/admin não desbloqueiam
     conquistas: usuario.papel === 'estudante' ? await conquistasDoPerfil(usuario.id) : [],
-    inventario: [] as [],
+    // R-M10 (D12): itens possuídos, visíveis a qualquer autenticado
+    inventario: usuario.papel === 'estudante' ? await itensDoPerfil(usuario.id) : [],
   }
   if (usuario.papel === 'professor') {
     return { ...base, bio: usuario.perfil_professor?.bio ?? null }

@@ -1,5 +1,6 @@
 import { randomUUID } from 'node:crypto'
 import { Prisma, type OrigemXp, type PrismaClient } from '@prisma/client'
+import { creditarPorXp } from './moedas'
 
 // SPEC/2026-10-02-xp-niveis.md (D7, DP-07) — concessão de XP por ações verificadas (T5.2)
 
@@ -137,7 +138,11 @@ export async function concederXp(
       ],
       skipDuplicates: true,
     })
-    if (criado.count > 0) ganho += evento.xp
+    if (criado.count > 0) {
+      ganho += evento.xp
+      // D12 (R-M1): as moedas do evento são creditadas na mesma transação
+      await creditarPorXp(tx, usuarioId, evento.chave, evento.referenciaId, evento.xp)
+    }
   }
   const total = anterior.xp_total + ganho
   // R-X17: nível = máximo entre o gravado e o derivado do XP total

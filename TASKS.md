@@ -577,7 +577,7 @@
 - **Artefatos esperados:** saldos por estudante; testes de tentativa de saldo negativo rejeitada; testes das fontes de crédito.
 - **Validação:** "saldo nunca fica negativo"; nenhuma origem de moeda fora dos mecanismos; funcionalidade 17 verificável.
 - **Rastreabilidade:** `PLAN.md` §5.12, §7 F8; SPEC §5 D12, §1; funcionalidades 16, 17.
-- **Bloqueios:** `[Depende de SPEC D12]` + global DP-01–DP-03
+- **Bloqueios:** `[Livre]` — **implementada em 2026-11-19** (`SPEC/2026-11-19-moedas-loja-inventario.md`: R-M1–R-M3, F8-01, MO-01/MO-02). Fonte de crédito atual: XP (D7); missões (T6.2) e desafios ficam para a SPEC de D9/D10
 
 #### T8.3 — Implementar loja com compra atômica
 
@@ -587,7 +587,7 @@
 - **Artefatos esperados:** loja navegável; compra atômica com testes de concorrência/falha (débito sem crédito e vice-versa nunca persistem); testes de preço/estoque.
 - **Validação:** "compra é atômica"; saldo debitado somente com item creditado; passo 10 executável; funcionalidades 16 e 18 verificáveis.
 - **Rastreabilidade:** `PLAN.md` §5.12, §7 F8; SPEC §5 D12, §4 passo 10; funcionalidades 16, 18.
-- **Bloqueios:** `[Depende de SPEC D12]` + global DP-01–DP-03
+- **Bloqueios:** `[Livre]` — **implementada em 2026-11-19** (F8-02, F8-03, F8-06, F8-07; MO-03–MO-11, inclusive concorrência de estoque e de saldo)
 
 #### T8.4 — Implementar inventário e uso de item
 
@@ -597,7 +597,7 @@
 - **Artefatos esperados:** inventário por estudante; fluxo de uso conforme efeito definido na SPEC D12; testes de não transferibilidade.
 - **Validação:** "item é não transferível por padrão"; inventário consistente após compra/uso; funcionalidade 19 verificável.
 - **Rastreabilidade:** `PLAN.md` §5.12, §7 F8; SPEC §5 D12; funcionalidades 19, 16.
-- **Bloqueios:** `[Depende de SPEC D12]` + global DP-01–DP-03
+- **Bloqueios:** `[Livre]` — **parcialmente implementada em 2026-11-19**: inventário e equipar/desequipar (F8-04, F8-05; MO-08). O **uso de item com efeito** (consumíveis) segue pendente de SPEC
 
 #### T8.5 — Exibir inventário no perfil e conectar recompensas do fluxo
 

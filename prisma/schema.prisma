@@ -52,6 +52,9 @@ model Usuario {
   eventos_xp         EventoXp[]
   saldo_xp           SaldoXp?
   desbloqueios       DesbloqueioConquista[]
+  saldo_moeda        SaldoMoeda?
+  eventos_moeda      EventoMoeda[]
+  inventario         ItemInventario[]
 
   @@map("usuario")
 }
@@ -474,4 +477,78 @@ model DesbloqueioConquista {
   @@unique([usuario_id, conquista_id])
   @@index([conquista_id])
   @@map("desbloqueio_conquista")
+}
+
+// D12 (SPEC/2026-11-19-moedas-loja-inventario.md §5): moedas, loja e inventário
+
+enum OrigemMoeda {
+  xp
+  compra
+}
+
+enum CategoriaItem {
+  moldura
+  titulo
+}
+
+model SaldoMoeda {
+  usuario_id    String   @id @db.Uuid
+  saldo         Int      @default(0)
+  criado_em     DateTime @default(now())
+  atualizado_em DateTime @updatedAt
+
+  usuario Usuario @relation(fields: [usuario_id], references: [id], onDelete: Cascade)
+
+  @@map("saldo_moeda")
+}
+
+model EventoMoeda {
+  id            String      @id @db.Uuid
+  usuario_id    String      @db.Uuid
+  origem        OrigemMoeda
+  referencia_id String?     @db.Uuid
+  chave         String      @db.Text
+  valor         Int
+  criado_em     DateTime    @default(now())
+
+  usuario Usuario @relation(fields: [usuario_id], references: [id], onDelete: Cascade)
+
+  @@unique([usuario_id, chave])
+  @@index([usuario_id, criado_em])
+  @@map("evento_moeda")
+}
+
+model ItemLoja {
+  id            String        @id @db.Uuid
+  codigo        String        @unique @db.Text
+  nome          String        @db.Text
+  descricao     String        @db.Text
+  categoria     CategoriaItem
+  preco         Int
+  estoque       Int?
+  ativo         Boolean       @default(true)
+  ordem         Int           @unique
+  criado_em     DateTime      @default(now())
+  atualizado_em DateTime      @updatedAt
+
+  inventario ItemInventario[]
+
+  @@map("item_loja")
+}
+
+model ItemInventario {
+  id            String   @id @db.Uuid
+  usuario_id    String   @db.Uuid
+  item_id       String   @db.Uuid
+  equipado      Boolean  @default(false)
+  adquirido_em  DateTime
+  criado_em     DateTime @default(now())
+  atualizado_em DateTime @updatedAt
+
+  usuario Usuario  @relation(fields: [usuario_id], references: [id], onDelete: Cascade)
+  item    ItemLoja @relation(fields: [item_id], references: [id])
+
+  @@unique([usuario_id, item_id])
+  @@index([item_id])
+  @@map("item_inventario")
 }

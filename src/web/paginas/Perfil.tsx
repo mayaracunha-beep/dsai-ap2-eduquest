@@ -1,6 +1,7 @@
 import { FormEvent, useCallback, useEffect, useState } from 'react'
 import { api, mensagemDeErro } from '../cliente'
 import type { Sessao } from '../App'
+import { ROTULO_CATEGORIA, type CategoriaItem } from '../tiposLoja'
 
 export interface Perfil {
   id: string
@@ -8,7 +9,16 @@ export interface Perfil {
   bio?: string | null
   nivel: number | null
   conquistas: ConquistaDoPerfil[]
-  inventario: unknown[]
+  inventario: ItemDoPerfil[]
+}
+
+// R-M10 (SPEC/2026-11-19-moedas-loja-inventario.md): itens possuídos, com o que está equipado
+export interface ItemDoPerfil {
+  itemId: string
+  codigo: string
+  nome: string
+  categoria: CategoriaItem
+  equipado: boolean
 }
 
 // Contrato 7 + R-C9 (SPEC/2026-10-02-conquistas.md): conquistas desbloqueadas, com data
@@ -256,8 +266,11 @@ export function PaginaPerfil({ sessao }: Props) {
               <p className="valor-vazio">Inventário vazio.</p>
             ) : (
               <ul className="lista-chips">
-                {perfil.inventario.map((item, indice) => (
-                  <li key={indice}>{typeof item === 'string' ? item : JSON.stringify(item)}</li>
+                {perfil.inventario.map((item) => (
+                  <li key={item.itemId} title={ROTULO_CATEGORIA[item.categoria]}>
+                    {item.nome}
+                    {item.equipado ? ' (equipado)' : ''}
+                  </li>
                 ))}
               </ul>
             )}
