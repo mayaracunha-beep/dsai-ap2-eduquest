@@ -1,6 +1,6 @@
 import { useSyncExternalStore } from 'react'
 
-export type Vista = 'login' | 'cadastro' | 'perfil' | 'recuperacao' | 'catalogo' | 'administracao' | 'loja' | 'inventario' | 'missoes'
+export type Vista = 'login' | 'cadastro' | 'perfil' | 'recuperacao' | 'catalogo' | 'administracao' | 'loja' | 'inventario' | 'missoes' | 'rankings'
 
 export interface Localizacao {
   vista: Vista

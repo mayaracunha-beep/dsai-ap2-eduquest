@@ -8,6 +8,7 @@ import { PaginaGestaoMissoes } from './paginas/GestaoMissoes'
 import { PaginaInventario } from './paginas/Inventario'
 import { PaginaLoja } from './paginas/Loja'
 import { PaginaMissoesEstudante } from './paginas/Missoes'
+import { PaginaRankings } from './paginas/Rankings'
 import { PaginaLogin } from './paginas/Login'
 import { PaginaPerfil } from './paginas/Perfil'
 import { PaginaRecuperacao } from './paginas/Recuperacao'
@@ -87,6 +88,14 @@ export function App() {
                 onClick={() => navegarParaVista('missoes')}
               >
                 Missões
+              </button>
+              <button
+                type="button"
+                className="nav-item"
+                aria-current={vista === 'rankings' ? 'page' : undefined}
+                onClick={() => navegarParaVista('rankings')}
+              >
+                Rankings
               </button>
               {sessaoAtual?.papel === 'estudante' && (
                 <>
@@ -169,6 +178,8 @@ export function App() {
         <PaginaPerfil sessao={sessaoAtual} />
       ) : sessaoAtual && vista === 'catalogo' ? (
         <PaginaCatalogo sessao={sessaoAtual} />
+      ) : sessaoAtual && vista === 'rankings' ? (
+        <PaginaRankings sessao={sessaoAtual} />
       ) : sessaoAtual && vista === 'missoes' ? (
         sessaoAtual.papel === 'estudante' ? (
           <PaginaMissoesEstudante />

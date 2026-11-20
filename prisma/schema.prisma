@@ -57,6 +57,7 @@ model Usuario {
   inventario         ItemInventario[]
   missoes_criadas    Missao[]
   cumprimentos_missao CumprimentoMissao[]
+  config_ranking     ConfigRanking?
 
   @@map("usuario")
 }
@@ -421,6 +422,8 @@ model EventoXp {
 
   @@unique([usuario_id, chave])
   @@index([usuario_id, concedido_em])
+  @@index([concedido_em])
+  @@index([curso_id, concedido_em])
   @@map("evento_xp")
 }
 
@@ -605,4 +608,24 @@ model CumprimentoMissao {
   @@unique([missao_id, usuario_id])
   @@index([usuario_id])
   @@map("cumprimento_missao")
+}
+
+// D11 (SPEC/2026-11-19-rankings.md §3): privacidade em rankings
+
+enum ParticipacaoRanking {
+  anonimo
+  apelido
+  oculto
+}
+
+model ConfigRanking {
+  usuario_id    String              @id @db.Uuid
+  participacao  ParticipacaoRanking @default(anonimo)
+  apelido       String?             @db.VarChar(30)
+  criado_em     DateTime            @default(now())
+  atualizado_em DateTime            @updatedAt
+
+  usuario Usuario @relation(fields: [usuario_id], references: [id], onDelete: Cascade)
+
+  @@map("config_ranking")
 }

@@ -1559,3 +1559,38 @@ main.principal-estreito .titulo-pagina {
   max-width: 32rem;
   margin-bottom: var(--esp-6);
 }
+
+/* ============================ rankings (D11) ============================ */
+
+.filtros-ranking {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--esp-2) var(--esp-3);
+  align-items: center;
+  max-width: 28rem;
+  margin-bottom: var(--esp-4);
+}
+
+.tabela-ranking {
+  width: 100%;
+  border-collapse: collapse;
+  margin: var(--esp-3) 0;
+}
+
+.tabela-ranking caption {
+  text-align: left;
+  font-weight: var(--peso-medio);
+  padding-bottom: var(--esp-2);
+}
+
+.tabela-ranking th,
+.tabela-ranking td {
+  padding: var(--esp-2) var(--esp-3);
+  border-bottom: 1px solid var(--borda);
+  text-align: left;
+}
+
+.tabela-ranking tr.linha-voce {
+  background: var(--primaria-suave);
+  font-weight: var(--peso-forte);
+}

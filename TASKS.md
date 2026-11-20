@@ -523,7 +523,7 @@
 - **Artefatos esperados:** `SPEC/` de D11 com critérios de aceitação.
 - **Validação:** regras de D11 da visão cobertas; empate/privacidade definidos apenas na SPEC D11.
 - **Rastreabilidade:** `PLAN.md` §5.11, §7 F7, §8 DP-10; SPEC §5 D11, §7.7.
-- **Bloqueios:** `[Bloqueada: DP-10]` — a SPEC D11 é o veículo de resolução
+- **Bloqueios:** `[Bloqueada: DP-10]` — a SPEC D11 é o veículo de resolução — **SPEC elaborada em 2026-11-19: `SPEC/2026-11-19-rankings.md` (R-RK1–R-RK11, F7-01–F7-03, RK-01–RK-12); DP-10 resolvida**
 
 #### T7.2 — Implementar definição e entrada de ranking
 
@@ -533,7 +533,7 @@
 - **Artefatos esperados:** rankings gerados a partir das métricas existentes; testes de escopo e período.
 - **Validação:** métrica claramente declarada; uso apenas de métricas de D6/D7; passo 9 do fluxo executável; funcionalidade 15 verificável.
 - **Rastreabilidade:** `PLAN.md` §5.11, §7 F7; SPEC §5 D11, §4 passo 9; funcionalidade 15.
-- **Bloqueios:** `[Bloqueada: DP-10]` (empate) + global DP-01–DP-03
+- **Bloqueios:** `[Bloqueada: DP-10]` (empate) + global DP-01–DP-03 — **implementada em 2026-11-19 (métrica declarada, escopo global/curso, período semana/total; sem turma, por falta de entidade)**
 
 #### T7.3 — Implementar cálculo servidor-side, empate e privacidade
 
@@ -543,7 +543,7 @@
 - **Artefatos esperados:** cálculo exclusivo servidor; aplicação da regra de empate; opções de privacidade; testes de empate e de exposição.
 - **Validação:** empate tratado por regra fixa; nenhum dado privado exposto; "cálculo servidor-side" verificado.
 - **Rastreabilidade:** `PLAN.md` §5.11, §4 princípio 2, §7 F7; SPEC §5 D11.
-- **Bloqueios:** `[Bloqueada: DP-10]` + global DP-01–DP-03
+- **Bloqueios:** `[Bloqueada: DP-10]` + global DP-01–DP-03 — **implementada em 2026-11-19 (cálculo só no servidor, empate fixo R-RK5, privacidade R-RK6/R-RK7; RK-01–RK-12)**
 
 #### T7.4 — Validar F7 (D11)
 
