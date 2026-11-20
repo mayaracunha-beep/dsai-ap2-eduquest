@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto'
-import type { Prisma, PrismaClient } from '@prisma/client'
+import type { OrigemMoeda, Prisma, PrismaClient } from '@prisma/client'
 
 // SPEC/2026-11-19-moedas-loja-inventario.md (D12) — moedas ganhas a partir do XP (R-M1) e consulta (F8-01)
 
@@ -14,28 +14,28 @@ export function moedasPorXp(xp: number): number {
   return xp > 0 ? Math.floor(xp / XP_POR_MOEDA) : 0
 }
 
+export interface CreditoDeMoedas {
+  origem: OrigemMoeda
+  chave: string
+  referenciaId: string
+  valor: number
+}
+
 /**
- * R-M1: credita as moedas de um evento de XP recém-gravado, na mesma transação.
- * A chave única (usuário + chave) impede pagar duas vezes o mesmo evento.
+ * Credita moedas na transação do chamador. A chave única (usuário + chave) impede
+ * pagar duas vezes a mesma origem; devolve o que de fato foi creditado.
  */
-export async function creditarPorXp(
-  tx: Tx,
-  usuarioId: string,
-  chaveEventoXp: string,
-  referenciaId: string,
-  xp: number
-): Promise<number> {
-  const moedas = moedasPorXp(xp)
-  if (moedas === 0) return 0
+export async function creditar(tx: Tx, usuarioId: string, credito: CreditoDeMoedas): Promise<number> {
+  if (credito.valor <= 0) return 0
   const criado = await tx.eventoMoeda.createMany({
     data: [
       {
         id: randomUUID(),
         usuario_id: usuarioId,
-        origem: 'xp',
-        referencia_id: referenciaId,
-        chave: `xp:${chaveEventoXp}`,
-        valor: moedas,
+        origem: credito.origem,
+        referencia_id: credito.referenciaId,
+        chave: credito.chave,
+        valor: credito.valor,
       },
     ],
     skipDuplicates: true,
@@ -43,14 +43,30 @@ export async function creditarPorXp(
   if (criado.count === 0) return 0
   await tx.saldoMoeda.upsert({
     where: { usuario_id: usuarioId },
-    create: { usuario_id: usuarioId, saldo: moedas },
-    update: { saldo: { increment: moedas } },
+    create: { usuario_id: usuarioId, saldo: credito.valor },
+    update: { saldo: { increment: credito.valor } },
   })
-  return moedas
+  return credito.valor
+}
+
+// R-M1: credita as moedas de um evento de XP recém-gravado (idempotente pela chave do evento)
+export async function creditarPorXp(
+  tx: Tx,
+  usuarioId: string,
+  chaveEventoXp: string,
+  referenciaId: string,
+  xp: number
+): Promise<number> {
+  return creditar(tx, usuarioId, {
+    origem: 'xp',
+    chave: `xp:${chaveEventoXp}`,
+    referenciaId,
+    valor: moedasPorXp(xp),
+  })
 }
 
 export interface MovimentoMoeda {
-  origem: 'xp' | 'compra'
+  origem: OrigemMoeda
   valor: number
   criadoEm: string
 }

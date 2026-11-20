@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest'
 import { prisma } from '../../src/server/prisma'
 import { creditarPorXp } from '../../src/server/servicos/moedas'
 import { api, criarUsuarioComSessao } from '../utilidades/aplicacao'
+import { cursoComAula } from '../utilidades/cursos'
 
 // SPEC/2026-11-19-moedas-loja-inventario.md (D12) — T8.2/T8.3: moedas, loja e inventário (MO-01–MO-12)
 
@@ -78,22 +79,15 @@ describe('F8-01 — saldo e extrato (R-M7)', () => {
 
 describe('R-M1 — moedas geradas pelo XP (MO-01)', () => {
   it('concluir aula credita floor(xp/5) moedas e repetir a conclusão não paga de novo', async () => {
-    const professor = await criarUsuarioComSessao('professor')
-    const curso = await professor.agente.post('/api/v1/cursos').send({ titulo: 'Curso' })
-    const cursoId = curso.body.cursoId as string
-    const modulo = await professor.agente.post(`/api/v1/cursos/${cursoId}/modulos`).send({ titulo: 'Modulo' })
-    await professor.agente.patch(`/api/v1/cursos/${cursoId}`).send({ publicado: true })
-    await professor.agente.patch(`/api/v1/modulos/${modulo.body.moduloId}`).send({ publicado: true })
-    const aula = await professor.agente.post(`/api/v1/modulos/${modulo.body.moduloId}/aulas`).send({ titulo: 'Aula' })
-    await professor.agente.patch(`/api/v1/aulas/${aula.body.aulaId}`).send({ publicado: true })
+    const { aulaId } = await cursoComAula()
 
     const estudante = await criarUsuarioComSessao('estudante')
-    const primeira = await estudante.agente.post(`/api/v1/aulas/${aula.body.aulaId}/conclusao`).send({})
+    const primeira = await estudante.agente.post(`/api/v1/aulas/${aulaId}/conclusao`).send({})
     expect(primeira.status).toBeLessThan(300)
     const esperado = Math.floor((primeira.body.xp.ganho as number) / 5)
     expect(await saldoDe(estudante)).toBe(esperado)
 
-    await estudante.agente.post(`/api/v1/aulas/${aula.body.aulaId}/conclusao`).send({})
+    await estudante.agente.post(`/api/v1/aulas/${aulaId}/conclusao`).send({})
     expect(await saldoDe(estudante)).toBe(esperado)
   })
 

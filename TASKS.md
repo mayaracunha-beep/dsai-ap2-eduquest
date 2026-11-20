@@ -459,7 +459,7 @@
 - **Artefatos esperados:** `SPEC/` de D9 com critérios de aceitação.
 - **Validação:** regras de D9 da visão cobertas; tabela de recompensas presente apenas na SPEC D9.
 - **Rastreabilidade:** `PLAN.md` §5.9, §7 F6, §8 DP-18; SPEC §5 D9.
-- **Bloqueios:** `[Bloqueada: DP-18]` para catálogo/tabela
+- **Bloqueios:** `[Bloqueada: DP-18]` para catálogo/tabela — **SPEC elaborada em 2026-11-19: `SPEC/2026-11-19-missoes.md` (R-MS1–R-MS11, F6-01–F6-04, MS-01–MS-12)**
 
 #### T6.2 — Implementar missões
 
@@ -469,7 +469,7 @@
 - **Artefatos esperados:** ciclo completo de missão (criação, progresso, cumprimento, expiração); testes de pagamento único e de expirada sem pagamento.
 - **Validação:** "recompensa paga uma única vez"; "missão expirada não paga"; passos 8 e 11 executáveis; funcionalidades 13 e 16 verificáveis.
 - **Rastreabilidade:** `PLAN.md` §5.9, §7 F6; SPEC §5 D9, §4 passos 8 e 11; funcionalidades 13, 16.
-- **Bloqueios:** `[Depende de SPEC D9]` + global DP-01–DP-03
+- **Bloqueios:** `[Depende de SPEC D9]` + global DP-01–DP-03 — **implementada em 2026-11-19 (F6-01–F6-04; MS-01–MS-12). Recompensa em moedas via D12; XP bônus e itens ficam pendentes**
 
 #### T6.3 — Elaborar SPEC do domínio D10 (desafios)
 

@@ -1,5 +1,6 @@
 import { randomUUID } from 'node:crypto'
 import { Prisma, type OrigemXp, type PrismaClient } from '@prisma/client'
+import { avaliarMissoes } from './missoes'
 import { creditarPorXp } from './moedas'
 
 // SPEC/2026-10-02-xp-niveis.md (D7, DP-07) — concessão de XP por ações verificadas (T5.2)
@@ -120,6 +121,7 @@ export async function concederXp(
   const eventos = await calcular(await valoresEfetivos(tx, cursoId))
   const agora = new Date()
   let ganho = 0
+  let gravados = 0
   for (const evento of eventos) {
     // eventos de valor 0 também são gravados (D7-a): a ação não paga depois se a configuração subir
     const criado = await tx.eventoXp.createMany({
@@ -139,11 +141,14 @@ export async function concederXp(
       skipDuplicates: true,
     })
     if (criado.count > 0) {
+      gravados += 1
       ganho += evento.xp
       // D12 (R-M1): as moedas do evento são creditadas na mesma transação
       await creditarPorXp(tx, usuarioId, evento.chave, evento.referenciaId, evento.xp)
     }
   }
+  // D9 (R-MS4): evento novo → reavalia as missões do estudante, na mesma transação
+  if (gravados > 0) await avaliarMissoes(tx, usuarioId, cursoId, agora)
   const total = anterior.xp_total + ganho
   // R-X17: nível = máximo entre o gravado e o derivado do XP total
   const nivel = Math.max(anterior.nivel, nivelDe(total))

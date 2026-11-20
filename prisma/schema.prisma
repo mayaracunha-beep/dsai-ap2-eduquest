@@ -55,6 +55,8 @@ model Usuario {
   saldo_moeda        SaldoMoeda?
   eventos_moeda      EventoMoeda[]
   inventario         ItemInventario[]
+  missoes_criadas    Missao[]
+  cumprimentos_missao CumprimentoMissao[]
 
   @@map("usuario")
 }
@@ -138,6 +140,7 @@ model Curso {
   modulos    Modulo[]
   avaliacoes Avaliacao[]
   config_xp  ConfigXpCurso?
+  missoes    Missao[]
 
   @@index([dono_id])
   @@map("curso")
@@ -484,6 +487,7 @@ model DesbloqueioConquista {
 enum OrigemMoeda {
   xp
   compra
+  missao
 }
 
 enum CategoriaItem {
@@ -551,4 +555,54 @@ model ItemInventario {
   @@unique([usuario_id, item_id])
   @@index([item_id])
   @@map("item_inventario")
+}
+
+// D9 (SPEC/2026-11-19-missoes.md §4): missões
+
+enum TipoMissao {
+  aulas_concluidas
+  questoes_acertadas
+  avaliacoes_entregues
+  xp_ganho
+}
+
+model Missao {
+  id                String     @id @db.Uuid
+  titulo            String     @db.Text
+  descricao         String     @db.Text
+  tipo              TipoMissao
+  meta              Int
+  inicio            DateTime
+  fim               DateTime
+  recompensa_moedas Int
+  ativa             Boolean    @default(true)
+  curso_id          String?    @db.Uuid
+  criador_id        String     @db.Uuid
+  criado_em         DateTime   @default(now())
+  atualizado_em     DateTime   @updatedAt
+
+  curso       Curso?              @relation(fields: [curso_id], references: [id], onDelete: Cascade)
+  criador     Usuario             @relation(fields: [criador_id], references: [id], onDelete: Cascade)
+  cumprimentos CumprimentoMissao[]
+
+  @@index([ativa, inicio, fim])
+  @@index([curso_id])
+  @@index([criador_id])
+  @@map("missao")
+}
+
+model CumprimentoMissao {
+  id          String   @id @db.Uuid
+  missao_id   String   @db.Uuid
+  usuario_id  String   @db.Uuid
+  moedas      Int
+  cumprida_em DateTime
+  criado_em   DateTime @default(now())
+
+  missao  Missao  @relation(fields: [missao_id], references: [id], onDelete: Cascade)
+  usuario Usuario @relation(fields: [usuario_id], references: [id], onDelete: Cascade)
+
+  @@unique([missao_id, usuario_id])
+  @@index([usuario_id])
+  @@map("cumprimento_missao")
 }

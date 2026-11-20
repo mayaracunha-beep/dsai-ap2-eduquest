@@ -4,8 +4,10 @@ import { navegarParaVista, substituirVista, useLocalizacao } from './navegacao'
 import { PaginaCadastro } from './paginas/Cadastro'
 import { PaginaAdministracao } from './paginas/ConfiguracaoXp'
 import { PaginaCatalogo } from './paginas/Catalogo'
+import { PaginaGestaoMissoes } from './paginas/GestaoMissoes'
 import { PaginaInventario } from './paginas/Inventario'
 import { PaginaLoja } from './paginas/Loja'
+import { PaginaMissoesEstudante } from './paginas/Missoes'
 import { PaginaLogin } from './paginas/Login'
 import { PaginaPerfil } from './paginas/Perfil'
 import { PaginaRecuperacao } from './paginas/Recuperacao'
@@ -77,6 +79,14 @@ export function App() {
                 onClick={() => navegarParaVista('catalogo')}
               >
                 Catálogo
+              </button>
+              <button
+                type="button"
+                className="nav-item"
+                aria-current={vista === 'missoes' ? 'page' : undefined}
+                onClick={() => navegarParaVista('missoes')}
+              >
+                Missões
               </button>
               {sessaoAtual?.papel === 'estudante' && (
                 <>
@@ -159,6 +169,12 @@ export function App() {
         <PaginaPerfil sessao={sessaoAtual} />
       ) : sessaoAtual && vista === 'catalogo' ? (
         <PaginaCatalogo sessao={sessaoAtual} />
+      ) : sessaoAtual && vista === 'missoes' ? (
+        sessaoAtual.papel === 'estudante' ? (
+          <PaginaMissoesEstudante />
+        ) : (
+          <PaginaGestaoMissoes sessao={sessaoAtual} />
+        )
       ) : sessaoAtual && vista === 'loja' && sessaoAtual.papel === 'estudante' ? (
         <PaginaLoja />
       ) : sessaoAtual && vista === 'inventario' && sessaoAtual.papel === 'estudante' ? (

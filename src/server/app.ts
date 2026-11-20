@@ -8,11 +8,12 @@ import { carregarSessao } from './middlewares/sessao'
 import { rotasAuth } from './rotas/auth'
 import { rotasAvaliacoes } from './rotas/avaliacoes'
 import { rotasCatalogo } from './rotas/catalogo'
+import { rotasLoja } from './rotas/loja'
+import { rotasMissoes } from './rotas/missoes'
 import { rotasPerfis } from './rotas/perfis'
 import { rotasQuestoes } from './rotas/questoes'
 import { rotasXp } from './rotas/xp'
 import { LIMITE_CORPO_CONTEUDO } from './servicos/conteudo'
-import { rotasLoja } from './rotas/loja'
 
 export function criarApp() {
   const app = express()
@@ -39,6 +40,7 @@ export function criarApp() {
   app.use('/api/v1', rotasAvaliacoes)
   app.use('/api/v1', rotasXp)
   app.use('/api/v1', rotasLoja)
+  app.use('/api/v1', rotasMissoes)
   app.use('/api', (_req, res) => {
     res.status(404).json({ erro: { codigo: 'nao_encontrado', mensagem: 'rota nao encontrada' } })
   })

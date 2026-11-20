@@ -1525,3 +1525,37 @@ main.principal-estreito .titulo-pagina {
     grid-template-columns: 1fr;
   }
 }
+
+/* ============================ missões (D9) ============================ */
+
+.cartao-missao.missao-cumprida {
+  border-color: var(--sucesso);
+  background: var(--sucesso-suave);
+}
+
+.cartao-missao.missao-encerrada {
+  opacity: 0.7;
+}
+
+.barra-progresso {
+  height: 0.5rem;
+  border-radius: var(--raio-pill);
+  background: var(--borda);
+  overflow: hidden;
+}
+
+.barra-progresso-preenchimento {
+  height: 100%;
+  background: var(--primaria);
+}
+
+.cartao-missao.missao-cumprida .barra-progresso-preenchimento {
+  background: var(--sucesso);
+}
+
+.form-missao {
+  display: grid;
+  gap: var(--esp-2);
+  max-width: 32rem;
+  margin-bottom: var(--esp-6);
+}
