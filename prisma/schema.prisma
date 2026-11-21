@@ -58,6 +58,8 @@ model Usuario {
   missoes_criadas    Missao[]
   cumprimentos_missao CumprimentoMissao[]
   config_ranking     ConfigRanking?
+  notificacoes       Notificacao[]
+  preferencias_notificacao PreferenciaNotificacao[]
 
   @@map("usuario")
 }
@@ -628,4 +630,42 @@ model ConfigRanking {
   usuario Usuario @relation(fields: [usuario_id], references: [id], onDelete: Cascade)
 
   @@map("config_ranking")
+}
+
+// D13 (SPEC/2026-11-19-notificacoes.md §4): notificações in-app
+
+enum TipoNotificacao {
+  conquista_desbloqueada
+  missao_cumprida
+  item_comprado
+  nivel_alcancado
+}
+
+model Notificacao {
+  id            String          @id @db.Uuid
+  usuario_id    String          @db.Uuid
+  tipo          TipoNotificacao
+  titulo        String          @db.Text
+  mensagem      String          @db.Text
+  referencia_id String?         @db.Uuid
+  chave         String          @db.Text
+  lida_em       DateTime?
+  criado_em     DateTime        @default(now())
+
+  usuario Usuario @relation(fields: [usuario_id], references: [id], onDelete: Cascade)
+
+  @@unique([usuario_id, chave])
+  @@index([usuario_id, lida_em, criado_em])
+  @@map("notificacao")
+}
+
+model PreferenciaNotificacao {
+  usuario_id String          @db.Uuid
+  tipo       TipoNotificacao
+  ativa      Boolean
+
+  usuario Usuario @relation(fields: [usuario_id], references: [id], onDelete: Cascade)
+
+  @@id([usuario_id, tipo])
+  @@map("preferencia_notificacao")
 }

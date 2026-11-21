@@ -5,6 +5,7 @@ import { prisma } from '../prisma'
 import { uuidValido } from '../tipos'
 import { ehDonoOuAdmin, exigirAutoria, type UsuarioSessao } from './catalogo'
 import { creditar } from './moedas'
+import { notificar } from './notificacoes'
 
 // SPEC/2026-11-19-missoes.md (D9) — missões: criação, progresso, cumprimento e gestão
 
@@ -215,6 +216,13 @@ export async function avaliarMissoes(
       valor: missao.recompensa_moedas,
     })
     cumpridas.push({ missaoId: missao.id, titulo: missao.titulo, moedas: missao.recompensa_moedas })
+    // D13 (R-NT2): aviso na mesma transação do cumprimento
+    await notificar(tx, usuarioId, {
+      tipo: 'missao_cumprida',
+      chave: `missao:${missao.id}`,
+      referenciaId: missao.id,
+      dados: { nome: missao.titulo, moedas: missao.recompensa_moedas },
+    })
   }
   return cumpridas
 }

@@ -3,9 +3,9 @@ import { describe, expect, it } from 'vitest'
 import type { OrigemXp, TipoMissao } from '@prisma/client'
 import { prisma } from '../../src/server/prisma'
 import { listarParaEstudante } from '../../src/server/servicos/missoes'
-import { concederXp } from '../../src/server/servicos/xp'
 import { api, criarUsuarioComSessao } from '../utilidades/aplicacao'
 import { cursoComAula } from '../utilidades/cursos'
+import { registrarEvento } from '../utilidades/eventos'
 
 // SPEC/2026-11-19-missoes.md (D9) — T6.2: missões (MS-01–MS-12)
 
@@ -14,15 +14,6 @@ type Usuario = Awaited<ReturnType<typeof criarUsuarioComSessao>>
 const HORA = 60 * 60 * 1000
 const DIA = 24 * HORA
 const depois = (ms: number) => new Date(Date.now() + ms)
-
-// evento de XP verificado, pela mesma função que as ações usam (dispara a avaliação de missões)
-async function registrarEvento(usuarioId: string, cursoId: string, origem: OrigemXp, xp = 0) {
-  await prisma.$transaction((tx) =>
-    concederXp(tx, usuarioId, cursoId, () => [
-      { origem, referenciaId: randomUUID(), cursoId, chave: `teste:${randomUUID()}`, xp },
-    ])
-  )
-}
 
 async function missaoNoBanco(
   criadorId: string,

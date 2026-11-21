@@ -4,6 +4,7 @@ import { Erro, erroConflito, erroNaoEncontrado, erroValidacao } from '../erros'
 import { prisma } from '../prisma'
 import { uuidValido } from '../tipos'
 import { lerSaldo } from './moedas'
+import { notificar } from './notificacoes'
 
 // SPEC/2026-11-19-moedas-loja-inventario.md (D12) — loja, compra, inventário e configuração
 
@@ -114,6 +115,13 @@ export async function comprarItem(usuarioId: string, itemIdRecebido: unknown) {
       })
       const posse = await tx.itemInventario.create({
         data: { id: randomUUID(), usuario_id: usuarioId, item_id: itemId, adquirido_em: agora },
+      })
+      // D13 (R-NT2): aviso na mesma transação da compra
+      await notificar(tx, usuarioId, {
+        tipo: 'item_comprado',
+        chave: `compra:${itemId}`,
+        referenciaId: itemId,
+        dados: { nome: item.nome },
       })
       const atualizado = await tx.itemLoja.findUniqueOrThrow({ where: { id: itemId } })
       return {

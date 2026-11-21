@@ -8,7 +8,10 @@ import { PaginaGestaoMissoes } from './paginas/GestaoMissoes'
 import { PaginaInventario } from './paginas/Inventario'
 import { PaginaLoja } from './paginas/Loja'
 import { PaginaMissoesEstudante } from './paginas/Missoes'
+import { PaginaNotificacoes } from './paginas/Notificacoes'
 import { PaginaRankings } from './paginas/Rankings'
+import { rotuloDoMenu } from './tiposNotificacao'
+import { useNaoLidas } from './useNaoLidas'
 import { PaginaLogin } from './paginas/Login'
 import { PaginaPerfil } from './paginas/Perfil'
 import { PaginaRecuperacao } from './paginas/Recuperacao'
@@ -52,6 +55,7 @@ export function App() {
 
   const autenticado = Boolean(sessao && sessao !== 'carregando')
   const sessaoAtual = sessao && sessao !== 'carregando' ? sessao : null
+  const [naoLidas, setNaoLidas] = useNaoLidas(sessaoAtual?.papel === 'estudante', vista)
 
   return (
     <>
@@ -114,6 +118,14 @@ export function App() {
                     onClick={() => navegarParaVista('inventario')}
                   >
                     Meu inventário
+                  </button>
+                  <button
+                    type="button"
+                    className="nav-item"
+                    aria-current={vista === 'notificacoes' ? 'page' : undefined}
+                    onClick={() => navegarParaVista('notificacoes')}
+                  >
+                    {rotuloDoMenu(naoLidas)}
                   </button>
                 </>
               )}
@@ -178,6 +190,8 @@ export function App() {
         <PaginaPerfil sessao={sessaoAtual} />
       ) : sessaoAtual && vista === 'catalogo' ? (
         <PaginaCatalogo sessao={sessaoAtual} />
+      ) : sessaoAtual && vista === 'notificacoes' && sessaoAtual.papel === 'estudante' ? (
+        <PaginaNotificacoes aoMudarNaoLidas={setNaoLidas} />
       ) : sessaoAtual && vista === 'rankings' ? (
         <PaginaRankings sessao={sessaoAtual} />
       ) : sessaoAtual && vista === 'missoes' ? (

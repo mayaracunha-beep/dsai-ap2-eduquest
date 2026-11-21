@@ -631,7 +631,7 @@
 - **Artefatos esperados:** `SPEC/` de D13 com critérios de aceitação.
 - **Validação:** regras de D13 da visão cobertas; e-mail marcado como pendência (DP-11), não implementado.
 - **Rastreabilidade:** `PLAN.md` §5.13, §7 F9, §8 DP-11; SPEC §5 D13.
-- **Bloqueios:** `[Livre]` (in-app); `[Bloqueada: DP-11]` para e-mail
+- **Bloqueios:** `[Livre]` (in-app); `[Bloqueada: DP-11]` para e-mail — **SPEC elaborada em 2026-11-19: `SPEC/2026-11-19-notificacoes.md` (R-NT1–R-NT9, F9-01–F9-05, NT-01–NT-09)**
 
 #### T9.2 — Implementar notificações in-app por eventos
 
@@ -641,7 +641,7 @@
 - **Artefatos esperados:** notificações criadas nos quatro eventos; testes de disparo e de não-disparo fora da lista.
 - **Validação:** "sem envio para eventos não permitidos"; passo 11 executável; funcionalidade 20 verificável.
 - **Rastreabilidade:** `PLAN.md` §5.13, §7 F9; SPEC §5 D13, §4 passo 11; funcionalidade 20.
-- **Bloqueios:** `[Depende de SPEC D13]` + global DP-01–DP-03
+- **Bloqueios:** `[Depende de SPEC D13]` + global DP-01–DP-03 — **implementada em 2026-11-19 (in-app; e-mail e aviso de missão prestes a expirar ficam pendentes)**
 
 #### T9.3 — Implementar preferências, leitura e frequência
 

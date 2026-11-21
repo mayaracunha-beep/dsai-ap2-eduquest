@@ -2,6 +2,7 @@ import { randomUUID } from 'node:crypto'
 import { Prisma, type OrigemXp, type PrismaClient } from '@prisma/client'
 import { avaliarMissoes } from './missoes'
 import { creditarPorXp } from './moedas'
+import { notificar } from './notificacoes'
 
 // SPEC/2026-10-02-xp-niveis.md (D7, DP-07) — concessão de XP por ações verificadas (T5.2)
 
@@ -157,6 +158,10 @@ export async function concederXp(
       where: { usuario_id: usuarioId },
       data: { xp_total: { increment: ganho }, nivel },
     })
+  }
+  // D13 (R-NT2): subir de nível avisa o estudante na mesma transação
+  if (nivel > anterior.nivel) {
+    await notificar(tx, usuarioId, { tipo: 'nivel_alcancado', chave: `nivel:${nivel}`, dados: { nivel } })
   }
   return { ganho, total, nivel, subiuNivel: nivel > anterior.nivel }
 }

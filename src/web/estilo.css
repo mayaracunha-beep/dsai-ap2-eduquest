@@ -1594,3 +1594,43 @@ main.principal-estreito .titulo-pagina {
   background: var(--primaria-suave);
   font-weight: var(--peso-forte);
 }
+
+/* ============================ notificações (D13) ============================ */
+
+.acoes-notificacoes {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--esp-3);
+  margin-bottom: var(--esp-4);
+}
+
+.lista-notificacoes,
+.lista-preferencias {
+  list-style: none;
+  margin: 0 0 var(--esp-6);
+  padding: 0;
+  display: grid;
+  gap: var(--esp-3);
+}
+
+.notificacao {
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-2);
+  padding: var(--esp-3) var(--esp-4);
+  border: 1px solid var(--borda);
+  border-radius: var(--raio-m);
+  background: var(--superficie);
+}
+
+.notificacao.notificacao-nova {
+  border-color: var(--primaria);
+  background: var(--primaria-suave);
+}
+
+.notificacao h2 {
+  margin: 0;
+  font-size: var(--tam-h3);
+}
