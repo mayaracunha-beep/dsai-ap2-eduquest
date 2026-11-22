@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { api, mensagemDeErro } from './cliente'
-import { navegarParaVista, substituirVista, useLocalizacao } from './navegacao'
+import { focarConteudo, useAcessibilidadeDeRota } from './acessibilidade'
+import { TITULOS_VISTA, navegarParaVista, substituirVista, useLocalizacao } from './navegacao'
 import { PaginaCadastro } from './paginas/Cadastro'
 import { PaginaAdministracao } from './paginas/ConfiguracaoXp'
 import { PaginaCatalogo } from './paginas/Catalogo'
@@ -9,6 +10,7 @@ import { PaginaInventario } from './paginas/Inventario'
 import { PaginaLoja } from './paginas/Loja'
 import { PaginaMissoesEstudante } from './paginas/Missoes'
 import { PaginaNotificacoes } from './paginas/Notificacoes'
+import { PaginaPainel } from './paginas/Painel'
 import { PaginaRankings } from './paginas/Rankings'
 import { rotuloDoMenu } from './tiposNotificacao'
 import { useNaoLidas } from './useNaoLidas'
@@ -56,9 +58,25 @@ export function App() {
   const autenticado = Boolean(sessao && sessao !== 'carregando')
   const sessaoAtual = sessao && sessao !== 'carregando' ? sessao : null
   const [naoLidas, setNaoLidas] = useNaoLidas(sessaoAtual?.papel === 'estudante', vista)
+  const anuncio = useAcessibilidadeDeRota(TITULOS_VISTA[vista], sessao !== 'carregando')
 
   return (
     <>
+      {/* R-AC1: primeiro elemento focável; o foco vai direto ao conteúdo principal */}
+      <a
+        className="pular-conteudo"
+        href="#conteudo-principal"
+        onClick={(evento) => {
+          evento.preventDefault()
+          focarConteudo()
+        }}
+      >
+        Pular para o conteúdo
+      </a>
+      {/* R-AC2: anuncia a nova página para leitores de tela */}
+      <div className="sr-only" aria-live="polite" aria-atomic="true" data-testid="anuncio-de-rota">
+        {anuncio}
+      </div>
       <header className="topo">
         <span className="marca">
           <span className="marca-monograma" aria-hidden="true">
@@ -69,6 +87,16 @@ export function App() {
         <nav aria-label="Navegação principal" className="nav-principal">
           {autenticado ? (
             <>
+              {sessaoAtual?.papel === 'estudante' && (
+                <button
+                  type="button"
+                  className="nav-item"
+                  aria-current={vista === 'painel' ? 'page' : undefined}
+                  onClick={() => navegarParaVista('painel')}
+                >
+                  Painel
+                </button>
+              )}
               <button
                 type="button"
                 className="nav-item"
@@ -190,6 +218,8 @@ export function App() {
         <PaginaPerfil sessao={sessaoAtual} />
       ) : sessaoAtual && vista === 'catalogo' ? (
         <PaginaCatalogo sessao={sessaoAtual} />
+      ) : sessaoAtual && vista === 'painel' && sessaoAtual.papel === 'estudante' ? (
+        <PaginaPainel />
       ) : sessaoAtual && vista === 'notificacoes' && sessaoAtual.papel === 'estudante' ? (
         <PaginaNotificacoes aoMudarNaoLidas={setNaoLidas} />
       ) : sessaoAtual && vista === 'rankings' ? (

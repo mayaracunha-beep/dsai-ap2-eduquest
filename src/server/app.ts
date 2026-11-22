@@ -11,6 +11,7 @@ import { rotasCatalogo } from './rotas/catalogo'
 import { rotasLoja } from './rotas/loja'
 import { rotasMissoes } from './rotas/missoes'
 import { rotasNotificacoes } from './rotas/notificacoes'
+import { rotasPainel } from './rotas/painel'
 import { rotasRankings } from './rotas/rankings'
 import { rotasPerfis } from './rotas/perfis'
 import { rotasQuestoes } from './rotas/questoes'
@@ -44,6 +45,7 @@ export function criarApp() {
   app.use('/api/v1', rotasLoja)
   app.use('/api/v1', rotasMissoes)
   app.use('/api/v1', rotasNotificacoes)
+  app.use('/api/v1', rotasPainel)
   app.use('/api/v1', rotasRankings)
   app.use('/api', (_req, res) => {
     res.status(404).json({ erro: { codigo: 'nao_encontrado', mensagem: 'rota nao encontrada' } })

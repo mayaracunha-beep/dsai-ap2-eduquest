@@ -1,6 +1,22 @@
 import { useSyncExternalStore } from 'react'
 
-export type Vista = 'login' | 'cadastro' | 'perfil' | 'recuperacao' | 'catalogo' | 'administracao' | 'loja' | 'inventario' | 'missoes' | 'rankings' | 'notificacoes'
+export type Vista = 'login' | 'cadastro' | 'perfil' | 'recuperacao' | 'catalogo' | 'administracao' | 'loja' | 'inventario' | 'missoes' | 'rankings' | 'notificacoes' | 'painel'
+
+// R-AC2 (SPEC/2026-11-19-painel-acessibilidade.md): nome de cada página, usado no título e no anúncio
+export const TITULOS_VISTA: Record<Vista, string> = {
+  login: 'Entrar',
+  cadastro: 'Criar conta',
+  recuperacao: 'Recuperar senha',
+  perfil: 'Perfil',
+  catalogo: 'Catálogo',
+  administracao: 'Administração',
+  loja: 'Loja',
+  inventario: 'Meu inventário',
+  missoes: 'Missões',
+  rankings: 'Rankings',
+  notificacoes: 'Notificações',
+  painel: 'Painel',
+}
 
 export interface Localizacao {
   vista: Vista
@@ -84,6 +100,11 @@ export function navegarParaVista(vista: Vista): void {
 
 export function substituirVista(vista: Vista): void {
   irPara({ vista, ...subrotasZeradas }, { substituir: true })
+}
+
+// atalho do painel: abre o curso no catálogo, de qualquer página
+export function abrirCursoNoCatalogo(cursoId: string): void {
+  irPara({ vista: 'catalogo', ...subrotasZeradas, cursoAberto: cursoId })
 }
 
 export function abrirCurso(cursoId: string): void {
