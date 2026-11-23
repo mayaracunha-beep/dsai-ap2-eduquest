@@ -35,6 +35,8 @@ model Usuario {
   id            String   @id @db.Uuid
   email         String   @unique @db.VarChar(255)
   papel         Papel
+  nome          String?  @db.VarChar(60)
+  avatar        String?  @db.VarChar(30)
   criado_em     DateTime @default(now())
   atualizado_em DateTime @updatedAt
 

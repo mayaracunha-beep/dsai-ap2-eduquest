@@ -5,6 +5,7 @@ import cookieParser from 'cookie-parser'
 import { diretorioWeb } from './config'
 import { manipularErro } from './erros'
 import { carregarSessao } from './middlewares/sessao'
+import { rotasAparencia } from './rotas/aparencia'
 import { rotasAuth } from './rotas/auth'
 import { rotasAvaliacoes } from './rotas/avaliacoes'
 import { rotasCatalogo } from './rotas/catalogo'
@@ -46,6 +47,7 @@ export function criarApp() {
   app.use('/api/v1', rotasMissoes)
   app.use('/api/v1', rotasNotificacoes)
   app.use('/api/v1', rotasPainel)
+  app.use('/api/v1', rotasAparencia)
   app.use('/api/v1', rotasRankings)
   app.use('/api', (_req, res) => {
     res.status(404).json({ erro: { codigo: 'nao_encontrado', mensagem: 'rota nao encontrada' } })

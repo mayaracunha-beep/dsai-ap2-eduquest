@@ -13,6 +13,8 @@ import { PaginaNotificacoes } from './paginas/Notificacoes'
 import { PaginaPainel } from './paginas/Painel'
 import { PaginaRankings } from './paginas/Rankings'
 import { rotuloDoMenu } from './tiposNotificacao'
+import { Avatar } from './componentes/Avatar'
+import { useAparencia } from './useAparencia'
 import { useNaoLidas } from './useNaoLidas'
 import { PaginaLogin } from './paginas/Login'
 import { PaginaPerfil } from './paginas/Perfil'
@@ -58,6 +60,7 @@ export function App() {
   const autenticado = Boolean(sessao && sessao !== 'carregando')
   const sessaoAtual = sessao && sessao !== 'carregando' ? sessao : null
   const [naoLidas, setNaoLidas] = useNaoLidas(sessaoAtual?.papel === 'estudante', vista)
+  const [aparencia] = useAparencia(sessaoAtual !== null, vista)
   const anuncio = useAcessibilidadeDeRota(TITULOS_VISTA[vista], sessao !== 'carregando')
 
   return (
@@ -166,6 +169,12 @@ export function App() {
                 >
                   Administração
                 </button>
+              )}
+              {aparencia && (
+                <span className="usuario-topo">
+                  <Avatar nome={aparencia.nome} avatar={aparencia.avatar} moldura={aparencia.moldura} tamanho="sm" />
+                  {aparencia.nome && <span className="usuario-topo-nome">{aparencia.nome}</span>}
+                </span>
               )}
               <button type="button" className="nav-item nav-sair" onClick={() => void sair()}>
                 Sair

@@ -19,6 +19,10 @@ describe('T1.5 — perfis (contratos 7 e 8)', () => {
     expect(resposta.body).toEqual({
       id: professor.id,
       papel: 'professor',
+      nome: null,
+      avatar: null,
+      moldura: null,
+      titulo: null,
       bio: null,
       nivel: null,
       conquistas: [],
@@ -33,6 +37,10 @@ describe('T1.5 — perfis (contratos 7 e 8)', () => {
     expect(respostaEstudante.body).toEqual({
       id: estudante.id,
       papel: 'estudante',
+      nome: null,
+      avatar: null,
+      moldura: null,
+      titulo: null,
       nivel: 1, // R-X23 (D7): estudante sem XP está no nível 1
       conquistas: [],
       inventario: [],

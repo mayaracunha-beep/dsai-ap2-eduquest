@@ -17,7 +17,7 @@ afterEach(() => {
 })
 
 describe('T1.2 — cadastro disponível na aplicação', () => {
-  it('formulário envia POST /api/v1/auth/registro apenas com e-mail e senha (sem campo de papel)', async () => {
+  it('formulário envia POST /api/v1/auth/registro com nome, e-mail e senha (sem campo de papel)', async () => {
     const fetchMock = vi.fn(
       async (url: unknown, init?: { method?: string; body?: string }) => {
         const alvo = String(url)
@@ -42,6 +42,7 @@ describe('T1.2 — cadastro disponível na aplicação', () => {
 
     fireEvent.click(await screen.findByText('Criar conta'))
     const campoEmail = await screen.findByLabelText('E-mail')
+    fireEvent.change(screen.getByLabelText('Nome'), { target: { value: 'Novo Usuário' } })
     fireEvent.change(campoEmail, { target: { value: 'novo@exemplo.test' } })
     fireEvent.change(screen.getByLabelText('Senha'), { target: { value: 'senha-larga-123' } })
     expect(screen.queryByLabelText('Papel')).toBeNull()
@@ -57,6 +58,7 @@ describe('T1.2 — cadastro disponível na aplicação', () => {
     const init = chamada![1]
     expect(init?.method).toBe('POST')
     expect(JSON.parse(init?.body ?? '{}')).toEqual({
+      nome: 'Novo Usuário',
       email: 'novo@exemplo.test',
       senha: 'senha-larga-123',
     })

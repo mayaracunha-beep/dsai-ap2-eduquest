@@ -3,6 +3,7 @@ import type { Papel, Usuario } from '@prisma/client'
 import { Prisma } from '@prisma/client'
 import { erroValidacao, Erro } from '../erros'
 import { prisma } from '../prisma'
+import { validarAvatar, validarNome } from './aparencia'
 import { conferirHash, gerarHash } from './senha'
 
 // R-12 (SPEC de D1): o cadastro público é do servidor, não do cliente.
@@ -32,15 +33,23 @@ export interface ContaCriada {
   papel: Papel
 }
 
-export async function criarConta(dados: { email?: unknown; senha?: unknown }): Promise<ContaCriada> {
+export async function criarConta(dados: {
+  email?: unknown
+  senha?: unknown
+  nome?: unknown
+  avatar?: unknown
+}): Promise<ContaCriada> {
   const email = validarEmail(dados.email)
   const senha = validarSenha(dados.senha)
+  // R-AV1: opcionais na API; quando enviados, precisam ser válidos (nada é criado se não forem)
+  const nome = dados.nome === undefined ? null : validarNome(dados.nome)
+  const avatar = dados.avatar === undefined ? null : validarAvatar(dados.avatar)
   const papel = PAPEL_PADRAO_CADASTRO
   const hash = await gerarHash(senha)
   try {
     const usuario = await prisma.$transaction(async (tx) => {
       const criado = await tx.usuario.create({
-        data: { id: randomUUID(), email, papel },
+        data: { id: randomUUID(), email, papel, nome, avatar },
       })
       await tx.credencial.create({
         data: { usuario_id: criado.id, hash_senha: hash },
