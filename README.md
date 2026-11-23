@@ -78,7 +78,9 @@ npm run db:importar-cursos -- professor@eduquest.example
 Substitua o e-mail pela conta do professor no ambiente de destino. A configuração
 vem do `.env` ou do ambiente do processo. A importação já publica Git e GitHub na
 prática, APIs REST e JSON, e Python para automação. O PDF fica na primeira aula de
-cada curso. Executar novamente preserva os cursos já importados e suas edições.
+cada curso. Cada curso também recebe uma avaliação final com cinco questões e
+duas tentativas. Execute o mesmo comando para adicioná-la aos cursos já
+importados. A importação preserva as edições e tentativas existentes.
 
 ## 4. Variáveis de ambiente
 
