@@ -296,3 +296,72 @@ describe('T4.2 — progresso de aprendizagem derivado de conclusões (D6, AC-D6-
     expect(doEstudante.body.progresso.aulasTotal).toBe(3)
   })
 })
+
+describe('Issue #4 — relatório de progresso do professor', () => {
+  it('conta somente conclusões em aulas publicadas de módulos publicados do curso', async () => {
+    const { professor, cursoId, aulasModulo1, aulaM2Id, modulo1Id } = await criarCursoPublicado()
+    const parcial = await criarUsuarioComSessao('estudante')
+    const completo = await criarUsuarioComSessao('estudante')
+    const excluido = await criarUsuarioComSessao('estudante')
+    await prisma.usuario.update({ where: { id: parcial.id }, data: { nome: 'Ana' } })
+    const aulaRascunho = await prisma.aula.create({
+      data: { id: randomUUID(), modulo_id: modulo1Id, titulo: 'Rascunho' },
+    })
+    const moduloRascunho = await prisma.modulo.create({
+      data: { id: randomUUID(), curso_id: cursoId, titulo: 'Módulo oculto' },
+    })
+    const aulaOculta = await prisma.aula.create({
+      data: { id: randomUUID(), modulo_id: moduloRascunho.id, titulo: 'Oculta', publicado: true },
+    })
+    const outroCurso = await criarCursoPublicado()
+    for (const aula of [...aulasModulo1, aulaM2Id]) {
+      expect((await concluir(completo.agente, aula)).status).toBe(201)
+    }
+    expect((await concluir(parcial.agente, aulasModulo1[0])).status).toBe(201)
+    for (const estudante of [parcial, excluido]) {
+      for (const aulaId of [aulaRascunho.id, aulaOculta.id, outroCurso.aulaM2Id]) {
+        await prisma.conclusaoAula.create({
+          data: { id: randomUUID(), aula_id: aulaId, usuario_id: estudante.id, concluida_em: new Date() },
+        })
+      }
+    }
+
+    const resposta = await professor.agente.get(`/api/v1/cursos/${cursoId}/relatorio-progresso`)
+    expect(resposta.status).toBe(200)
+    expect(resposta.body).toEqual([
+      { estudanteId: parcial.id, nome: 'Ana', aulasConcluidas: 1, aulasTotal: 3, percentual: 33 },
+      { estudanteId: completo.id, nome: 'Estudante sem nome', aulasConcluidas: 3, aulasTotal: 3, percentual: 100 },
+    ])
+  })
+
+  it('permite somente o professor dono e retorna lista vazia sem conclusões elegíveis', async () => {
+    const { professor, cursoId, aulaM2Id } = await criarCursoPublicado()
+    const outroProfessor = await criarUsuarioComSessao('professor')
+    const estudante = await criarUsuarioComSessao('estudante')
+    const administrador = await criarUsuarioComSessao('administrador')
+    const caminho = `/api/v1/cursos/${cursoId}/relatorio-progresso`
+
+    const vazio = await professor.agente.get(caminho)
+    expect(vazio.status).toBe(200)
+    expect(vazio.body).toEqual([])
+
+    expect((await concluir(estudante.agente, aulaM2Id)).status).toBe(201)
+    expect((await professor.agente.get(caminho)).body).toHaveLength(1)
+
+    for (const usuario of [outroProfessor, estudante, administrador]) {
+      const negada = await usuario.agente.get(caminho)
+      expect(negada.status).toBe(403)
+      expect(Object.keys(negada.body)).toEqual(['erro'])
+      expect(negada.body.erro.codigo).toBe('proibido')
+    }
+    expect((await api.get(caminho)).status).toBe(401)
+
+    const cursoVazio = await professor.agente.post('/api/v1/cursos').send({ titulo: 'Curso vazio' })
+    expect(cursoVazio.status).toBe(201)
+    const semAulas = await professor.agente.get(
+      `/api/v1/cursos/${cursoVazio.body.cursoId}/relatorio-progresso`
+    )
+    expect(semAulas.status).toBe(200)
+    expect(semAulas.body).toEqual([])
+  })
+})

@@ -16,6 +16,7 @@ import {
   lerAula,
   lerCurso,
   listarCursos,
+  relatorioProgressoDoCurso,
   substituirConteudo,
 } from '../servicos/catalogo'
 
@@ -34,6 +35,11 @@ rotasCatalogo.get('/cursos', exigirSessao, async (req, res) => {
 rotasCatalogo.get('/cursos/:id', exigirSessao, async (req, res) => {
   const curso = await lerCurso(req.usuario!, req.params.id)
   res.status(200).json(curso)
+})
+
+rotasCatalogo.get('/cursos/:id/relatorio-progresso', exigirSessao, exigirPapel('professor'), async (req, res) => {
+  const estudantes = await relatorioProgressoDoCurso(req.usuario!, req.params.id)
+  res.json(estudantes)
 })
 
 rotasCatalogo.patch('/cursos/:id', exigirSessao, async (req, res) => {

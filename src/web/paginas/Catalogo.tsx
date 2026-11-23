@@ -12,6 +12,7 @@ import {
 import { SecaoXpCurso } from './ConfiguracaoXp'
 import { QuestoesModulo } from './Questoes'
 import { AvaliacaoDetalhe } from './Avaliacoes'
+import { RelatorioProgresso } from './RelatorioProgresso'
 
 interface ResumoCurso {
   id: string
@@ -422,6 +423,10 @@ function DetalheCurso({ sessao, cursoId, aoVoltar }: PropsCurso) {
           {totalAulas} {totalAulas === 1 ? 'aula' : 'aulas'}
         </p>
       </div>
+
+      {sessao.papel === 'professor' && curso.donoId === sessao.usuarioId && (
+        <RelatorioProgresso key={curso.id} cursoId={curso.id} />
+      )}
 
       {sessao.papel === 'estudante' && curso.progresso && (
         <section className="bloco-progresso" aria-label="Seu progresso">
