@@ -1,0 +1,50 @@
+[
+  {
+    "slug": "git-github",
+    "titulo": "Git e GitHub na prática",
+    "modulo": "Controle de versão em equipe",
+    "aulas": [
+      [
+        "Commits e histórico",
+        "Um commit registra uma versão dos arquivos selecionados. Use git status para conferir o estado da pasta e git diff para entender o que mudou antes do commit."
+      ],
+      [
+        "Branches e pull requests",
+        "Crie uma branch para cada tarefa. No pull request, descreva o objetivo da mudança, mostre como testou e peça a revisão de um colega."
+      ]
+    ],
+    "exercicio": "Em um repositório de estudo, altere o README e registre a mudança em uma branch. Descreva o que entraria na revisão."
+  },
+  {
+    "slug": "apis-rest-json",
+    "titulo": "APIs REST e JSON",
+    "modulo": "Comunicação entre aplicações",
+    "aulas": [
+      [
+        "Requisições HTTP e JSON",
+        "Uma requisição tem método e endereço. GET consulta um recurso. JSON é um formato de dados com objetos, listas e valores como números, textos e booleanos."
+      ],
+      [
+        "Respostas e códigos HTTP",
+        "O status resume o resultado da requisição. Em uma API de cursos, 200 indica consulta bem-sucedida, 201 indica criação e 404 indica que o recurso solicitado não foi encontrado."
+      ]
+    ],
+    "exercicio": "Descreva as respostas de uma API ao consultar um curso existente e um curso que não existe. Identifique os tipos dos campos do exemplo."
+  },
+  {
+    "slug": "python-automacao",
+    "titulo": "Python para automação",
+    "modulo": "Arquivos e relatórios simples",
+    "aulas": [
+      [
+        "Leitura de arquivos CSV",
+        "Um CSV representa dados tabulares. DictReader lê a linha de títulos como nomes das colunas e entrega cada registro como um dicionário."
+      ],
+      [
+        "Validação e resumo de dados",
+        "Antes de somar um campo, converta o texto para o tipo esperado. Se um valor estiver inválido, informe a linha que precisa de correção."
+      ]
+    ],
+    "exercicio": "Crie aulas.csv com a coluna titulo e dois registros. Execute o exemplo e explique como a contagem é calculada."
+  }
+]

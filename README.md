@@ -67,6 +67,19 @@ Contêineres completos (app + banco + proxy): `docker compose up -d --build` (ap
 
 > O `.env` está no `.gitignore` — nunca é commitado. Use `.env.example` como modelo.
 
+### Cursos de tecnologia com apostilas
+
+Com o banco migrado, importe os cursos atribuindo-os a um professor existente:
+
+```bash
+npm run db:importar-cursos -- professor@eduquest.example
+```
+
+Substitua o e-mail pela conta do professor no ambiente de destino. A configuração
+vem do `.env` ou do ambiente do processo. A importação já publica Git e GitHub na
+prática, APIs REST e JSON, e Python para automação. O PDF fica na primeira aula de
+cada curso. Executar novamente preserva os cursos já importados e suas edições.
+
 ## 4. Variáveis de ambiente
 
 Modelo: [`.env.example`](.env.example).
