@@ -846,6 +846,9 @@ function idConteudo(n: number): string {
 }
 
 async function principal(): Promise<void> {
+  if (process.env.NODE_ENV === 'production') {
+    throw new Error('seed de desenvolvimento recusado em produção')
+  }
   if ((process.env.DATABASE_URL ?? '').includes('eduquest_test')) {
     throw new Error('seed recusado: DATABASE_URL aponta para o banco de teste (eduquest_test)')
   }
