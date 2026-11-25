@@ -174,6 +174,39 @@ function dentroDaJanela(avaliacao: { abre_em: Date; fecha_em: Date }, agora = ne
   return agora >= avaliacao.abre_em && agora <= avaliacao.fecha_em
 }
 
+export async function desempenhoPorQuestao(usuario: UsuarioSessao, id: unknown) {
+  const avaliacao = await avaliacaoParaAlteracao(id, usuario)
+  const contagens = await prisma.$queryRaw<{
+    questao_id: string
+    corrigidas: number
+    acertos: number
+  }[]>`
+    SELECT resposta.questao_id,
+           COUNT(*)::int AS corrigidas,
+           COUNT(*) FILTER (
+             WHERE resposta.acerto IS TRUE
+                OR (resposta.acerto IS NULL AND resposta.pontos = item.peso)
+           )::int AS acertos
+    FROM resposta_avaliacao AS resposta
+    JOIN tentativa_avaliacao AS tentativa ON tentativa.id = resposta.tentativa_id
+    JOIN avaliacao_questao AS item
+      ON item.avaliacao_id = tentativa.avaliacao_id AND item.questao_id = resposta.questao_id
+    WHERE tentativa.avaliacao_id = ${avaliacao.id}::uuid AND resposta.pontos IS NOT NULL
+    GROUP BY resposta.questao_id
+  `
+  const porQuestao = new Map(contagens.map((linha) => [linha.questao_id, linha]))
+  return avaliacao.questoes.map(({ questao }) => {
+    const { corrigidas = 0, acertos = 0 } = porQuestao.get(questao.id) ?? {}
+    return {
+      questaoId: questao.id,
+      enunciado: questao.enunciado,
+      corrigidas,
+      acertos,
+      percentual: corrigidas ? Math.round(100 * acertos / corrigidas) : 0,
+    }
+  })
+}
+
 // D5-c/R-A11: questões só para dono/admin ou, para o estudante, dentro da janela e sem gabarito
 function montarAvaliacao(avaliacao: AvaliacaoCompleta, usuario: UsuarioSessao, comQuestoes: boolean): AvaliacaoLida {
   const autor = ehDonoOuAdmin(avaliacao.curso.dono_id, usuario)
