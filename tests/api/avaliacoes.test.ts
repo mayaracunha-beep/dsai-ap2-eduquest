@@ -66,6 +66,56 @@ function realizar(agente: Agente, avaliacaoId: string, respostas: unknown[]) {
   return agente.post(`/api/v1/avaliacoes/${avaliacaoId}/tentativas`).send({ respostas })
 }
 
+describe('T11.2 — desempenho por questão', () => {
+  it('agrega respostas corrigidas e acertos na ordem da avaliação', async () => {
+    const { professor, estudante, avaliacaoId, questoes: [vf, diss] } = await avaliacaoAberta([
+      { corpo: VF, peso: 2 },
+      { corpo: DISS, peso: 3 },
+    ])
+    const rota = `/api/v1/avaliacoes/${avaliacaoId}/desempenho`
+    const ler = async () => (await professor.agente.get(rota).expect(200)).body
+    expect(await ler()).toEqual([
+      { questaoId: vf, enunciado: VF.enunciado, corrigidas: 0, acertos: 0, percentual: 0 },
+      { questaoId: diss, enunciado: DISS.enunciado, corrigidas: 0, acertos: 0, percentual: 0 },
+    ])
+
+    const enviar = (valor: boolean) => realizar(estudante.agente, avaliacaoId, [
+      { questaoId: vf, resposta: { valor } },
+      { questaoId: diss, resposta: { texto: 'Resposta' } },
+    ]).expect(201)
+    const primeira = await enviar(true)
+    const segunda = await enviar(false)
+    const corrigir = (id: string, pontos: number) => professor.agente
+      .put(`/api/v1/tentativas-avaliacao/${id}/correcoes/${diss}`).send({ pontos }).expect(200)
+
+    await corrigir(primeira.body.tentativaId, 1.5)
+    expect(await ler()).toMatchObject([
+      { corrigidas: 2, acertos: 1, percentual: 50 },
+      { corrigidas: 1, acertos: 0, percentual: 0 },
+    ])
+    await corrigir(segunda.body.tentativaId, 3)
+    expect((await ler())[1]).toMatchObject({ corrigidas: 2, acertos: 1, percentual: 50 })
+    await corrigir(primeira.body.tentativaId, 3)
+    expect((await ler())[1]).toMatchObject({ corrigidas: 2, acertos: 2, percentual: 100 })
+  })
+
+  it('retorna lista vazia e restringe a consulta ao professor dono', async () => {
+    const { professor, cursoId } = await cursoComQuestoes([])
+    const avaliacao = await prisma.avaliacao.create({ data: {
+      id: randomUUID(), curso_id: cursoId, titulo: 'Avaliação sem composição', tentativas_max: 1,
+      abre_em: new Date(janelaPassada().abreEm), fecha_em: new Date(janelaPassada().fechaEm),
+    } })
+    const rota = `/api/v1/avaliacoes/${avaliacao.id}/desempenho`
+    await professor.agente.get(rota).expect(200, [])
+    await api.get(rota).expect(401)
+    for (const papel of ['professor', 'estudante', 'administrador'] as const) {
+      const usuario = await criarUsuarioComSessao(papel)
+      await usuario.agente.get(rota).expect(403)
+    }
+    await professor.agente.get(`/api/v1/avaliacoes/${randomUUID()}/desempenho`).expect(404)
+  })
+})
+
 describe('T3.5 — avaliações: montagem e visibilidade (F3-07–F3-11, SPEC D5)', () => {
   it('TA-01: dono cria em rascunho; 401 sem sessão; 404 curso inexistente; 403 não-dono e estudante', async () => {
     const { professor, cursoId, questoes } = await cursoComQuestoes([VF])
