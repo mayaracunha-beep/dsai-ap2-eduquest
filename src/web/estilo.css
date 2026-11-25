@@ -1410,3 +1410,459 @@ main.principal-estreito .titulo-pagina {
     grid-template-columns: 1fr;
   }
 }
+
+/* ============================ loja, inventário e moedas (D12) ============================ */
+
+.saldo-moedas {
+  display: inline-flex;
+  padding: 0.2rem var(--esp-3);
+  border-radius: var(--raio-pill);
+  background: var(--aviso-suave);
+  color: var(--aviso);
+  font-size: var(--tam-h3);
+  font-weight: var(--peso-forte);
+}
+
+.grade-loja {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+  gap: var(--esp-4);
+  list-style: none;
+  margin: var(--esp-4) 0;
+  padding: 0;
+}
+
+.item-loja {
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-2);
+  padding: var(--esp-4);
+  border: 1px solid var(--borda);
+  border-radius: var(--raio-m);
+  background: var(--superficie);
+  box-shadow: var(--sombra-1);
+}
+
+.item-loja.item-equipado {
+  border-color: var(--sucesso);
+  background: var(--sucesso-suave);
+}
+
+.item-loja-topo {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--esp-2);
+}
+
+.item-loja-topo h2,
+.item-loja-topo h3 {
+  margin: 0;
+  font-size: var(--tam-h3);
+}
+
+.item-loja-categoria {
+  padding: 0 var(--esp-2);
+  border-radius: var(--raio-pill);
+  background: var(--primaria-suave);
+  color: var(--primaria-escura);
+  font-size: var(--tam-sec);
+  white-space: nowrap;
+}
+
+.item-loja-descricao,
+.item-loja-estoque {
+  margin: 0;
+  color: var(--texto-sec);
+  font-size: var(--tam-sec);
+}
+
+.item-loja-preco {
+  margin: 0;
+  font-weight: var(--peso-forte);
+}
+
+.item-loja-possui {
+  margin: 0;
+  color: var(--sucesso);
+  font-weight: var(--peso-medio);
+}
+
+.item-loja button {
+  margin-top: auto;
+}
+
+.lista-config-loja {
+  list-style: none;
+  margin: var(--esp-4) 0 0;
+  padding: 0;
+  display: grid;
+  gap: var(--esp-3);
+}
+
+.linha-config-loja {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: var(--esp-2) var(--esp-3);
+  align-items: center;
+  padding: var(--esp-3);
+  border: 1px solid var(--borda);
+  border-radius: var(--raio-s);
+  background: var(--superficie-alt);
+}
+
+.linha-config-loja label {
+  grid-column: 1 / -1;
+  font-size: var(--tam-sec);
+}
+
+.linha-config-loja input[type='number'] {
+  grid-column: 1 / -1;
+}
+
+@media (max-width: 768px) {
+  .grade-loja {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ============================ missões (D9) ============================ */
+
+.cartao-missao.missao-cumprida {
+  border-color: var(--sucesso);
+  background: var(--sucesso-suave);
+}
+
+.cartao-missao.missao-encerrada {
+  opacity: 0.7;
+}
+
+.barra-progresso {
+  height: 0.5rem;
+  border-radius: var(--raio-pill);
+  background: var(--borda);
+  overflow: hidden;
+}
+
+.barra-progresso-preenchimento {
+  height: 100%;
+  background: var(--primaria);
+}
+
+.cartao-missao.missao-cumprida .barra-progresso-preenchimento {
+  background: var(--sucesso);
+}
+
+.form-missao {
+  display: grid;
+  gap: var(--esp-2);
+  max-width: 32rem;
+  margin-bottom: var(--esp-6);
+}
+
+/* ============================ rankings (D11) ============================ */
+
+.filtros-ranking {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--esp-2) var(--esp-3);
+  align-items: center;
+  max-width: 28rem;
+  margin-bottom: var(--esp-4);
+}
+
+.tabela-ranking {
+  width: 100%;
+  border-collapse: collapse;
+  margin: var(--esp-3) 0;
+}
+
+.tabela-ranking caption {
+  text-align: left;
+  font-weight: var(--peso-medio);
+  padding-bottom: var(--esp-2);
+}
+
+.tabela-ranking th,
+.tabela-ranking td {
+  padding: var(--esp-2) var(--esp-3);
+  border-bottom: 1px solid var(--borda);
+  text-align: left;
+}
+
+.tabela-ranking tr.linha-voce {
+  background: var(--primaria-suave);
+  font-weight: var(--peso-forte);
+}
+
+/* ============================ notificações (D13) ============================ */
+
+.acoes-notificacoes {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--esp-3);
+  margin-bottom: var(--esp-4);
+}
+
+.lista-notificacoes,
+.lista-preferencias {
+  list-style: none;
+  margin: 0 0 var(--esp-6);
+  padding: 0;
+  display: grid;
+  gap: var(--esp-3);
+}
+
+.notificacao {
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-2);
+  padding: var(--esp-3) var(--esp-4);
+  border: 1px solid var(--borda);
+  border-radius: var(--raio-m);
+  background: var(--superficie);
+}
+
+.notificacao.notificacao-nova {
+  border-color: var(--primaria);
+  background: var(--primaria-suave);
+}
+
+.notificacao h2 {
+  margin: 0;
+  font-size: var(--tam-h3);
+}
+
+/* ============================ acessibilidade e painel (D2/AC) ============================ */
+
+.pular-conteudo {
+  position: absolute;
+  top: 0;
+  left: var(--esp-4);
+  z-index: 100;
+  padding: var(--esp-2) var(--esp-4);
+  border-radius: 0 0 var(--raio-m) var(--raio-m);
+  background: var(--primaria-escura);
+  color: var(--texto-invertido);
+  font-weight: var(--peso-medio);
+  transform: translateY(-120%);
+}
+
+.pular-conteudo:focus,
+.pular-conteudo:focus-visible {
+  transform: translateY(0);
+  color: var(--texto-invertido);
+}
+
+main h1:focus,
+main:focus {
+  outline: none;
+}
+
+.grade-painel {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
+  gap: var(--esp-4);
+  margin-top: var(--esp-4);
+}
+
+.cartao-painel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-2);
+  padding: var(--esp-4);
+  border: 1px solid var(--borda);
+  border-radius: var(--raio-m);
+  background: var(--superficie);
+  box-shadow: var(--sombra-1);
+}
+
+.cartao-painel h2 {
+  margin: 0;
+  font-size: var(--tam-h3);
+}
+
+.painel-destaque {
+  margin: 0;
+  font-size: var(--tam-h2);
+  font-weight: var(--peso-forte);
+}
+
+.lista-painel {
+  display: grid;
+  gap: var(--esp-3);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.lista-painel li {
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-1);
+}
+
+.cartao-painel button {
+  margin-top: auto;
+  align-self: flex-start;
+}
+
+@media (max-width: 768px) {
+  .grade-painel {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ============================ avatar, moldura e identidade (SPEC nome-avatar-moldura) ============================ */
+
+.avatar {
+  --avatar-cor: var(--primaria);
+  --anel: transparent;
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  box-sizing: border-box;
+  border: 4px solid transparent;
+  border-radius: 50%;
+  vertical-align: middle;
+  background: linear-gradient(var(--avatar-cor), var(--avatar-cor)) padding-box, var(--anel) border-box;
+}
+
+.avatar-sm {
+  width: 2.25rem;
+  height: 2.25rem;
+  border-width: 3px;
+  font-size: 1rem;
+}
+
+.avatar-md {
+  width: 3.5rem;
+  height: 3.5rem;
+  font-size: 1.6rem;
+}
+
+.avatar-lg {
+  width: 6rem;
+  height: 6rem;
+  border-width: 6px;
+  font-size: 2.6rem;
+}
+
+.avatar-iniciais {
+  color: var(--texto-invertido);
+  font-weight: var(--peso-forte);
+}
+
+/* molduras: decorativas; o nome acessível do avatar já cita a moldura (R-AV8) */
+.avatar-moldura.moldura-bronze {
+  --anel: linear-gradient(135deg, #b45309, #f59e0b);
+}
+
+.avatar-moldura.moldura-prata {
+  --anel: linear-gradient(135deg, #64748b, #e2e8f0, #94a3b8);
+}
+
+.avatar-moldura.moldura-ouro {
+  --anel: linear-gradient(135deg, #d97706, #fde68a, #f59e0b);
+}
+
+.avatar-moldura.moldura-galaxia {
+  --anel: conic-gradient(#6366f1, #ec4899, #22d3ee, #6366f1);
+}
+
+.avatar-moldura.moldura-generica {
+  --anel: linear-gradient(135deg, var(--primaria), var(--primaria-escura));
+}
+
+.identidade-perfil {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-4);
+  margin: var(--esp-4) 0;
+}
+
+.identidade-nome {
+  margin: 0;
+  font-size: var(--tam-h2);
+  font-weight: var(--peso-forte);
+}
+
+.identidade-titulo {
+  margin: 0;
+  color: var(--texto-sec);
+}
+
+.usuario-topo {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--esp-2);
+}
+
+.usuario-topo-nome {
+  max-width: 10rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.seletor-avatar {
+  border: 1px solid var(--borda);
+  border-radius: var(--raio-m);
+  padding: var(--esp-3);
+}
+
+.seletor-avatar-opcoes {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(5rem, 1fr));
+  gap: var(--esp-2);
+}
+
+.opcao-avatar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--esp-1);
+  padding: var(--esp-2);
+  border: 2px solid transparent;
+  border-radius: var(--raio-m);
+  cursor: pointer;
+}
+
+.opcao-avatar input {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+}
+
+.opcao-avatar:focus-within {
+  outline: 2px solid var(--primaria);
+  outline-offset: 2px;
+}
+
+.opcao-avatar-ativa {
+  border-color: var(--primaria);
+  background: var(--primaria-suave);
+}
+
+.opcao-avatar-emoji {
+  display: grid;
+  place-items: center;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  font-size: 1.6rem;
+}
+
+.opcao-avatar-rotulo {
+  font-size: var(--tam-sec);
+}
+
+.editor-aparencia form {
+  display: grid;
+  gap: var(--esp-2);
+  max-width: 32rem;
+  margin-bottom: var(--esp-6);
+}

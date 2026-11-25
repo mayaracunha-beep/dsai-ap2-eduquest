@@ -2,34 +2,48 @@ import type { Papel } from '@prisma/client'
 import { erroNaoEncontrado, erroProibido, erroValidacao } from '../erros'
 import { prisma } from '../prisma'
 import { uuidValido } from '../tipos'
+import { avatarPorId, equipadosDe, type AvatarDto, type ItemEquipado } from './aparencia'
 import { conquistasDoPerfil, type ConquistaDoPerfil } from './conquistas'
+import { itensDoPerfil, type ItemDoPerfil } from './loja'
 import { nivelDoEstudante } from './xp'
 
 export interface RespostaPerfil {
   id: string
   papel: Papel
+  nome: string | null
+  avatar: AvatarDto | null
+  moldura: ItemEquipado | null
+  titulo: ItemEquipado | null
   bio?: string | null
   nivel: number | null
   conquistas: ConquistaDoPerfil[]
-  inventario: []
+  inventario: ItemDoPerfil[]
 }
 
 interface UsuarioComPerfil {
   id: string
   papel: Papel
+  nome: string | null
+  avatar: string | null
   perfil_professor: { bio: string | null } | null
 }
 
 // R-X23 (D7): estudante recebe o nível (inteiro); professor/admin, null.
 // R-X24: XP total e da semana nunca aparecem no perfil (só em F5-01, para o próprio estudante).
 async function montarResposta(usuario: UsuarioComPerfil): Promise<RespostaPerfil> {
+  // R-M10 (D12): itens possuídos, visíveis a qualquer autenticado
+  const inventario = usuario.papel === 'estudante' ? await itensDoPerfil(usuario.id) : []
   const base = {
     id: usuario.id,
     papel: usuario.papel,
+    // R-AV2/R-AV3: nome e avatar escolhidos; R-AV4/R-AV7: moldura e título equipados (só estudante)
+    nome: usuario.nome,
+    avatar: avatarPorId(usuario.avatar),
+    ...equipadosDe(inventario),
     nivel: usuario.papel === 'estudante' ? await nivelDoEstudante(prisma, usuario.id) : null,
     // R-C9 (D8): desbloqueadas, visíveis a qualquer autenticado; professor/admin não desbloqueiam
     conquistas: usuario.papel === 'estudante' ? await conquistasDoPerfil(usuario.id) : [],
-    inventario: [] as [],
+    inventario,
   }
   if (usuario.papel === 'professor') {
     return { ...base, bio: usuario.perfil_professor?.bio ?? null }

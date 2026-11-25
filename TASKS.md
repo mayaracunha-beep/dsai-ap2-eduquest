@@ -459,7 +459,7 @@
 - **Artefatos esperados:** `SPEC/` de D9 com critérios de aceitação.
 - **Validação:** regras de D9 da visão cobertas; tabela de recompensas presente apenas na SPEC D9.
 - **Rastreabilidade:** `PLAN.md` §5.9, §7 F6, §8 DP-18; SPEC §5 D9.
-- **Bloqueios:** `[Bloqueada: DP-18]` para catálogo/tabela
+- **Bloqueios:** `[Bloqueada: DP-18]` para catálogo/tabela — **SPEC elaborada em 2026-11-19: `SPEC/2026-11-19-missoes.md` (R-MS1–R-MS11, F6-01–F6-04, MS-01–MS-12)**
 
 #### T6.2 — Implementar missões
 
@@ -469,7 +469,7 @@
 - **Artefatos esperados:** ciclo completo de missão (criação, progresso, cumprimento, expiração); testes de pagamento único e de expirada sem pagamento.
 - **Validação:** "recompensa paga uma única vez"; "missão expirada não paga"; passos 8 e 11 executáveis; funcionalidades 13 e 16 verificáveis.
 - **Rastreabilidade:** `PLAN.md` §5.9, §7 F6; SPEC §5 D9, §4 passos 8 e 11; funcionalidades 13, 16.
-- **Bloqueios:** `[Depende de SPEC D9]` + global DP-01–DP-03
+- **Bloqueios:** `[Depende de SPEC D9]` + global DP-01–DP-03 — **implementada em 2026-11-19 (F6-01–F6-04; MS-01–MS-12). Recompensa em moedas via D12; XP bônus e itens ficam pendentes**
 
 #### T6.3 — Elaborar SPEC do domínio D10 (desafios)
 
@@ -523,7 +523,7 @@
 - **Artefatos esperados:** `SPEC/` de D11 com critérios de aceitação.
 - **Validação:** regras de D11 da visão cobertas; empate/privacidade definidos apenas na SPEC D11.
 - **Rastreabilidade:** `PLAN.md` §5.11, §7 F7, §8 DP-10; SPEC §5 D11, §7.7.
-- **Bloqueios:** `[Bloqueada: DP-10]` — a SPEC D11 é o veículo de resolução
+- **Bloqueios:** `[Bloqueada: DP-10]` — a SPEC D11 é o veículo de resolução — **SPEC elaborada em 2026-11-19: `SPEC/2026-11-19-rankings.md` (R-RK1–R-RK11, F7-01–F7-03, RK-01–RK-12); DP-10 resolvida**
 
 #### T7.2 — Implementar definição e entrada de ranking
 
@@ -533,7 +533,7 @@
 - **Artefatos esperados:** rankings gerados a partir das métricas existentes; testes de escopo e período.
 - **Validação:** métrica claramente declarada; uso apenas de métricas de D6/D7; passo 9 do fluxo executável; funcionalidade 15 verificável.
 - **Rastreabilidade:** `PLAN.md` §5.11, §7 F7; SPEC §5 D11, §4 passo 9; funcionalidade 15.
-- **Bloqueios:** `[Bloqueada: DP-10]` (empate) + global DP-01–DP-03
+- **Bloqueios:** `[Bloqueada: DP-10]` (empate) + global DP-01–DP-03 — **implementada em 2026-11-19 (métrica declarada, escopo global/curso, período semana/total; sem turma, por falta de entidade)**
 
 #### T7.3 — Implementar cálculo servidor-side, empate e privacidade
 
@@ -543,7 +543,7 @@
 - **Artefatos esperados:** cálculo exclusivo servidor; aplicação da regra de empate; opções de privacidade; testes de empate e de exposição.
 - **Validação:** empate tratado por regra fixa; nenhum dado privado exposto; "cálculo servidor-side" verificado.
 - **Rastreabilidade:** `PLAN.md` §5.11, §4 princípio 2, §7 F7; SPEC §5 D11.
-- **Bloqueios:** `[Bloqueada: DP-10]` + global DP-01–DP-03
+- **Bloqueios:** `[Bloqueada: DP-10]` + global DP-01–DP-03 — **implementada em 2026-11-19 (cálculo só no servidor, empate fixo R-RK5, privacidade R-RK6/R-RK7; RK-01–RK-12)**
 
 #### T7.4 — Validar F7 (D11)
 
@@ -577,7 +577,7 @@
 - **Artefatos esperados:** saldos por estudante; testes de tentativa de saldo negativo rejeitada; testes das fontes de crédito.
 - **Validação:** "saldo nunca fica negativo"; nenhuma origem de moeda fora dos mecanismos; funcionalidade 17 verificável.
 - **Rastreabilidade:** `PLAN.md` §5.12, §7 F8; SPEC §5 D12, §1; funcionalidades 16, 17.
-- **Bloqueios:** `[Depende de SPEC D12]` + global DP-01–DP-03
+- **Bloqueios:** `[Livre]` — **implementada em 2026-11-19** (`SPEC/2026-11-19-moedas-loja-inventario.md`: R-M1–R-M3, F8-01, MO-01/MO-02). Fonte de crédito atual: XP (D7); missões (T6.2) e desafios ficam para a SPEC de D9/D10
 
 #### T8.3 — Implementar loja com compra atômica
 
@@ -587,7 +587,7 @@
 - **Artefatos esperados:** loja navegável; compra atômica com testes de concorrência/falha (débito sem crédito e vice-versa nunca persistem); testes de preço/estoque.
 - **Validação:** "compra é atômica"; saldo debitado somente com item creditado; passo 10 executável; funcionalidades 16 e 18 verificáveis.
 - **Rastreabilidade:** `PLAN.md` §5.12, §7 F8; SPEC §5 D12, §4 passo 10; funcionalidades 16, 18.
-- **Bloqueios:** `[Depende de SPEC D12]` + global DP-01–DP-03
+- **Bloqueios:** `[Livre]` — **implementada em 2026-11-19** (F8-02, F8-03, F8-06, F8-07; MO-03–MO-11, inclusive concorrência de estoque e de saldo)
 
 #### T8.4 — Implementar inventário e uso de item
 
@@ -597,7 +597,7 @@
 - **Artefatos esperados:** inventário por estudante; fluxo de uso conforme efeito definido na SPEC D12; testes de não transferibilidade.
 - **Validação:** "item é não transferível por padrão"; inventário consistente após compra/uso; funcionalidade 19 verificável.
 - **Rastreabilidade:** `PLAN.md` §5.12, §7 F8; SPEC §5 D12; funcionalidades 19, 16.
-- **Bloqueios:** `[Depende de SPEC D12]` + global DP-01–DP-03
+- **Bloqueios:** `[Livre]` — **parcialmente implementada em 2026-11-19**: inventário e equipar/desequipar (F8-04, F8-05; MO-08). O **uso de item com efeito** (consumíveis) segue pendente de SPEC
 
 #### T8.5 — Exibir inventário no perfil e conectar recompensas do fluxo
 
@@ -631,7 +631,7 @@
 - **Artefatos esperados:** `SPEC/` de D13 com critérios de aceitação.
 - **Validação:** regras de D13 da visão cobertas; e-mail marcado como pendência (DP-11), não implementado.
 - **Rastreabilidade:** `PLAN.md` §5.13, §7 F9, §8 DP-11; SPEC §5 D13.
-- **Bloqueios:** `[Livre]` (in-app); `[Bloqueada: DP-11]` para e-mail
+- **Bloqueios:** `[Livre]` (in-app); `[Bloqueada: DP-11]` para e-mail — **SPEC elaborada em 2026-11-19: `SPEC/2026-11-19-notificacoes.md` (R-NT1–R-NT9, F9-01–F9-05, NT-01–NT-09)**
 
 #### T9.2 — Implementar notificações in-app por eventos
 
@@ -641,7 +641,7 @@
 - **Artefatos esperados:** notificações criadas nos quatro eventos; testes de disparo e de não-disparo fora da lista.
 - **Validação:** "sem envio para eventos não permitidos"; passo 11 executável; funcionalidade 20 verificável.
 - **Rastreabilidade:** `PLAN.md` §5.13, §7 F9; SPEC §5 D13, §4 passo 11; funcionalidade 20.
-- **Bloqueios:** `[Depende de SPEC D13]` + global DP-01–DP-03
+- **Bloqueios:** `[Depende de SPEC D13]` + global DP-01–DP-03 — **implementada em 2026-11-19 (in-app; e-mail e aviso de missão prestes a expirar ficam pendentes)**
 
 #### T9.3 — Implementar preferências, leitura e frequência
 

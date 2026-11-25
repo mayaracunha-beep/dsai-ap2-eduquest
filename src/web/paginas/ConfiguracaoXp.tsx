@@ -1,5 +1,6 @@
 import { FormEvent, useCallback, useEffect, useState } from 'react'
 import { api, mensagemDeErro } from '../cliente'
+import { SecaoLoja } from './ConfiguracaoLoja'
 
 // SPEC/2026-10-02-xp-niveis.md §6.2/§6.4 — configuração de XP (F5-02–F5-05). O servidor valida
 // as faixas (0–1.000 no global; 0–2× o global no curso) e calcula o valor efetivo.
@@ -108,6 +109,7 @@ export function PaginaAdministracao() {
             !erro && <p className="carregando">Carregando configuração…</p>
           )}
         </section>
+        <SecaoLoja />
       </article>
     </main>
   )

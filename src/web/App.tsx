@@ -1,9 +1,21 @@
 import { useCallback, useEffect, useState } from 'react'
 import { api, mensagemDeErro } from './cliente'
-import { navegarParaVista, substituirVista, useLocalizacao } from './navegacao'
+import { focarConteudo, useAcessibilidadeDeRota } from './acessibilidade'
+import { TITULOS_VISTA, navegarParaVista, substituirVista, useLocalizacao } from './navegacao'
 import { PaginaCadastro } from './paginas/Cadastro'
 import { PaginaAdministracao } from './paginas/ConfiguracaoXp'
 import { PaginaCatalogo } from './paginas/Catalogo'
+import { PaginaGestaoMissoes } from './paginas/GestaoMissoes'
+import { PaginaInventario } from './paginas/Inventario'
+import { PaginaLoja } from './paginas/Loja'
+import { PaginaMissoesEstudante } from './paginas/Missoes'
+import { PaginaNotificacoes } from './paginas/Notificacoes'
+import { PaginaPainel } from './paginas/Painel'
+import { PaginaRankings } from './paginas/Rankings'
+import { rotuloDoMenu } from './tiposNotificacao'
+import { Avatar } from './componentes/Avatar'
+import { useAparencia } from './useAparencia'
+import { useNaoLidas } from './useNaoLidas'
 import { PaginaLogin } from './paginas/Login'
 import { PaginaPerfil } from './paginas/Perfil'
 import { PaginaRecuperacao } from './paginas/Recuperacao'
@@ -47,9 +59,27 @@ export function App() {
 
   const autenticado = Boolean(sessao && sessao !== 'carregando')
   const sessaoAtual = sessao && sessao !== 'carregando' ? sessao : null
+  const [naoLidas, setNaoLidas] = useNaoLidas(sessaoAtual?.papel === 'estudante', vista)
+  const [aparencia] = useAparencia(sessaoAtual !== null, vista)
+  const anuncio = useAcessibilidadeDeRota(TITULOS_VISTA[vista], sessao !== 'carregando')
 
   return (
     <>
+      {/* R-AC1: primeiro elemento focável; o foco vai direto ao conteúdo principal */}
+      <a
+        className="pular-conteudo"
+        href="#conteudo-principal"
+        onClick={(evento) => {
+          evento.preventDefault()
+          focarConteudo()
+        }}
+      >
+        Pular para o conteúdo
+      </a>
+      {/* R-AC2: anuncia a nova página para leitores de tela */}
+      <div className="sr-only" aria-live="polite" aria-atomic="true" data-testid="anuncio-de-rota">
+        {anuncio}
+      </div>
       <header className="topo">
         <span className="marca">
           <span className="marca-monograma" aria-hidden="true">
@@ -60,6 +90,16 @@ export function App() {
         <nav aria-label="Navegação principal" className="nav-principal">
           {autenticado ? (
             <>
+              {sessaoAtual?.papel === 'estudante' && (
+                <button
+                  type="button"
+                  className="nav-item"
+                  aria-current={vista === 'painel' ? 'page' : undefined}
+                  onClick={() => navegarParaVista('painel')}
+                >
+                  Painel
+                </button>
+              )}
               <button
                 type="button"
                 className="nav-item"
@@ -76,6 +116,50 @@ export function App() {
               >
                 Catálogo
               </button>
+              <button
+                type="button"
+                className="nav-item"
+                aria-current={vista === 'missoes' ? 'page' : undefined}
+                onClick={() => navegarParaVista('missoes')}
+              >
+                Missões
+              </button>
+              <button
+                type="button"
+                className="nav-item"
+                aria-current={vista === 'rankings' ? 'page' : undefined}
+                onClick={() => navegarParaVista('rankings')}
+              >
+                Rankings
+              </button>
+              {sessaoAtual?.papel === 'estudante' && (
+                <>
+                  <button
+                    type="button"
+                    className="nav-item"
+                    aria-current={vista === 'loja' ? 'page' : undefined}
+                    onClick={() => navegarParaVista('loja')}
+                  >
+                    Loja
+                  </button>
+                  <button
+                    type="button"
+                    className="nav-item"
+                    aria-current={vista === 'inventario' ? 'page' : undefined}
+                    onClick={() => navegarParaVista('inventario')}
+                  >
+                    Meu inventário
+                  </button>
+                  <button
+                    type="button"
+                    className="nav-item"
+                    aria-current={vista === 'notificacoes' ? 'page' : undefined}
+                    onClick={() => navegarParaVista('notificacoes')}
+                  >
+                    {rotuloDoMenu(naoLidas)}
+                  </button>
+                </>
+              )}
               {sessaoAtual?.papel === 'administrador' && (
                 <button
                   type="button"
@@ -85,6 +169,12 @@ export function App() {
                 >
                   Administração
                 </button>
+              )}
+              {aparencia && (
+                <span className="usuario-topo">
+                  <Avatar nome={aparencia.nome} avatar={aparencia.avatar} moldura={aparencia.moldura} tamanho="sm" />
+                  {aparencia.nome && <span className="usuario-topo-nome">{aparencia.nome}</span>}
+                </span>
               )}
               <button type="button" className="nav-item nav-sair" onClick={() => void sair()}>
                 Sair
@@ -137,6 +227,22 @@ export function App() {
         <PaginaPerfil sessao={sessaoAtual} />
       ) : sessaoAtual && vista === 'catalogo' ? (
         <PaginaCatalogo sessao={sessaoAtual} />
+      ) : sessaoAtual && vista === 'painel' && sessaoAtual.papel === 'estudante' ? (
+        <PaginaPainel />
+      ) : sessaoAtual && vista === 'notificacoes' && sessaoAtual.papel === 'estudante' ? (
+        <PaginaNotificacoes aoMudarNaoLidas={setNaoLidas} />
+      ) : sessaoAtual && vista === 'rankings' ? (
+        <PaginaRankings sessao={sessaoAtual} />
+      ) : sessaoAtual && vista === 'missoes' ? (
+        sessaoAtual.papel === 'estudante' ? (
+          <PaginaMissoesEstudante />
+        ) : (
+          <PaginaGestaoMissoes sessao={sessaoAtual} />
+        )
+      ) : sessaoAtual && vista === 'loja' && sessaoAtual.papel === 'estudante' ? (
+        <PaginaLoja />
+      ) : sessaoAtual && vista === 'inventario' && sessaoAtual.papel === 'estudante' ? (
+        <PaginaInventario aoIrParaLoja={() => navegarParaVista('loja')} />
       ) : sessaoAtual && vista === 'administracao' && sessaoAtual.papel === 'administrador' ? (
         <PaginaAdministracao />
       ) : vista === 'cadastro' ? (

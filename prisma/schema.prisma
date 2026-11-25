@@ -35,6 +35,8 @@ model Usuario {
   id            String   @id @db.Uuid
   email         String   @unique @db.VarChar(255)
   papel         Papel
+  nome          String?  @db.VarChar(60)
+  avatar        String?  @db.VarChar(30)
   criado_em     DateTime @default(now())
   atualizado_em DateTime @updatedAt
 
@@ -52,6 +54,14 @@ model Usuario {
   eventos_xp         EventoXp[]
   saldo_xp           SaldoXp?
   desbloqueios       DesbloqueioConquista[]
+  saldo_moeda        SaldoMoeda?
+  eventos_moeda      EventoMoeda[]
+  inventario         ItemInventario[]
+  missoes_criadas    Missao[]
+  cumprimentos_missao CumprimentoMissao[]
+  config_ranking     ConfigRanking?
+  notificacoes       Notificacao[]
+  preferencias_notificacao PreferenciaNotificacao[]
 
   @@map("usuario")
 }
@@ -135,6 +145,7 @@ model Curso {
   modulos    Modulo[]
   avaliacoes Avaliacao[]
   config_xp  ConfigXpCurso?
+  missoes    Missao[]
 
   @@index([dono_id])
   @@map("curso")
@@ -415,6 +426,8 @@ model EventoXp {
 
   @@unique([usuario_id, chave])
   @@index([usuario_id, concedido_em])
+  @@index([concedido_em])
+  @@index([curso_id, concedido_em])
   @@map("evento_xp")
 }
 
@@ -474,4 +487,187 @@ model DesbloqueioConquista {
   @@unique([usuario_id, conquista_id])
   @@index([conquista_id])
   @@map("desbloqueio_conquista")
+}
+
+// D12 (SPEC/2026-11-19-moedas-loja-inventario.md §5): moedas, loja e inventário
+
+enum OrigemMoeda {
+  xp
+  compra
+  missao
+}
+
+enum CategoriaItem {
+  moldura
+  titulo
+}
+
+model SaldoMoeda {
+  usuario_id    String   @id @db.Uuid
+  saldo         Int      @default(0)
+  criado_em     DateTime @default(now())
+  atualizado_em DateTime @updatedAt
+
+  usuario Usuario @relation(fields: [usuario_id], references: [id], onDelete: Cascade)
+
+  @@map("saldo_moeda")
+}
+
+model EventoMoeda {
+  id            String      @id @db.Uuid
+  usuario_id    String      @db.Uuid
+  origem        OrigemMoeda
+  referencia_id String?     @db.Uuid
+  chave         String      @db.Text
+  valor         Int
+  criado_em     DateTime    @default(now())
+
+  usuario Usuario @relation(fields: [usuario_id], references: [id], onDelete: Cascade)
+
+  @@unique([usuario_id, chave])
+  @@index([usuario_id, criado_em])
+  @@map("evento_moeda")
+}
+
+model ItemLoja {
+  id            String        @id @db.Uuid
+  codigo        String        @unique @db.Text
+  nome          String        @db.Text
+  descricao     String        @db.Text
+  categoria     CategoriaItem
+  preco         Int
+  estoque       Int?
+  ativo         Boolean       @default(true)
+  ordem         Int           @unique
+  criado_em     DateTime      @default(now())
+  atualizado_em DateTime      @updatedAt
+
+  inventario ItemInventario[]
+
+  @@map("item_loja")
+}
+
+model ItemInventario {
+  id            String   @id @db.Uuid
+  usuario_id    String   @db.Uuid
+  item_id       String   @db.Uuid
+  equipado      Boolean  @default(false)
+  adquirido_em  DateTime
+  criado_em     DateTime @default(now())
+  atualizado_em DateTime @updatedAt
+
+  usuario Usuario  @relation(fields: [usuario_id], references: [id], onDelete: Cascade)
+  item    ItemLoja @relation(fields: [item_id], references: [id])
+
+  @@unique([usuario_id, item_id])
+  @@index([item_id])
+  @@map("item_inventario")
+}
+
+// D9 (SPEC/2026-11-19-missoes.md §4): missões
+
+enum TipoMissao {
+  aulas_concluidas
+  questoes_acertadas
+  avaliacoes_entregues
+  xp_ganho
+}
+
+model Missao {
+  id                String     @id @db.Uuid
+  titulo            String     @db.Text
+  descricao         String     @db.Text
+  tipo              TipoMissao
+  meta              Int
+  inicio            DateTime
+  fim               DateTime
+  recompensa_moedas Int
+  ativa             Boolean    @default(true)
+  curso_id          String?    @db.Uuid
+  criador_id        String     @db.Uuid
+  criado_em         DateTime   @default(now())
+  atualizado_em     DateTime   @updatedAt
+
+  curso       Curso?              @relation(fields: [curso_id], references: [id], onDelete: Cascade)
+  criador     Usuario             @relation(fields: [criador_id], references: [id], onDelete: Cascade)
+  cumprimentos CumprimentoMissao[]
+
+  @@index([ativa, inicio, fim])
+  @@index([curso_id])
+  @@index([criador_id])
+  @@map("missao")
+}
+
+model CumprimentoMissao {
+  id          String   @id @db.Uuid
+  missao_id   String   @db.Uuid
+  usuario_id  String   @db.Uuid
+  moedas      Int
+  cumprida_em DateTime
+  criado_em   DateTime @default(now())
+
+  missao  Missao  @relation(fields: [missao_id], references: [id], onDelete: Cascade)
+  usuario Usuario @relation(fields: [usuario_id], references: [id], onDelete: Cascade)
+
+  @@unique([missao_id, usuario_id])
+  @@index([usuario_id])
+  @@map("cumprimento_missao")
+}
+
+// D11 (SPEC/2026-11-19-rankings.md §3): privacidade em rankings
+
+enum ParticipacaoRanking {
+  anonimo
+  apelido
+  oculto
+}
+
+model ConfigRanking {
+  usuario_id    String              @id @db.Uuid
+  participacao  ParticipacaoRanking @default(anonimo)
+  apelido       String?             @db.VarChar(30)
+  criado_em     DateTime            @default(now())
+  atualizado_em DateTime            @updatedAt
+
+  usuario Usuario @relation(fields: [usuario_id], references: [id], onDelete: Cascade)
+
+  @@map("config_ranking")
+}
+
+// D13 (SPEC/2026-11-19-notificacoes.md §4): notificações in-app
+
+enum TipoNotificacao {
+  conquista_desbloqueada
+  missao_cumprida
+  item_comprado
+  nivel_alcancado
+}
+
+model Notificacao {
+  id            String          @id @db.Uuid
+  usuario_id    String          @db.Uuid
+  tipo          TipoNotificacao
+  titulo        String          @db.Text
+  mensagem      String          @db.Text
+  referencia_id String?         @db.Uuid
+  chave         String          @db.Text
+  lida_em       DateTime?
+  criado_em     DateTime        @default(now())
+
+  usuario Usuario @relation(fields: [usuario_id], references: [id], onDelete: Cascade)
+
+  @@unique([usuario_id, chave])
+  @@index([usuario_id, lida_em, criado_em])
+  @@map("notificacao")
+}
+
+model PreferenciaNotificacao {
+  usuario_id String          @db.Uuid
+  tipo       TipoNotificacao
+  ativa      Boolean
+
+  usuario Usuario @relation(fields: [usuario_id], references: [id], onDelete: Cascade)
+
+  @@id([usuario_id, tipo])
+  @@map("preferencia_notificacao")
 }

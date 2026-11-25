@@ -1,6 +1,7 @@
 import { randomUUID } from 'node:crypto'
 import type { Prisma, PrismaClient, TipoCriterio } from '@prisma/client'
 import { prisma } from '../prisma'
+import { notificar } from './notificacoes'
 import { nivelDe } from './xp'
 
 // SPEC/2026-10-02-conquistas.md (D8, DP-18 parcela D8) — desbloqueio de conquistas (T5.6)
@@ -116,7 +117,16 @@ export async function avaliarConquistas(
       data: [{ id: randomUUID(), usuario_id: usuarioId, conquista_id: conquista.id, desbloqueada_em: agora }],
       skipDuplicates: true,
     })
-    if (criado.count > 0) novas.push({ codigo: conquista.codigo, nome: conquista.nome })
+    if (criado.count > 0) {
+      novas.push({ codigo: conquista.codigo, nome: conquista.nome })
+      // D13 (R-NT2): o aviso nasce na mesma transação do desbloqueio
+      await notificar(tx, usuarioId, {
+        tipo: 'conquista_desbloqueada',
+        chave: `conquista:${conquista.id}`,
+        referenciaId: conquista.id,
+        dados: { nome: conquista.nome },
+      })
+    }
   }
   return novas
 }

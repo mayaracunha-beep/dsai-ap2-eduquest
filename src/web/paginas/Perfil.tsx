@@ -1,14 +1,32 @@
 import { FormEvent, useCallback, useEffect, useState } from 'react'
 import { api, mensagemDeErro } from '../cliente'
 import type { Sessao } from '../App'
+import { Avatar } from '../componentes/Avatar'
+import { SeletorDeAvatar } from '../componentes/SeletorDeAvatar'
+import { navegarParaVista } from '../navegacao'
+import { NOME_MAXIMO, type Aparencia, type ItemEquipado, type OpcaoDeAvatar } from '../tiposAparencia'
+import { ROTULO_CATEGORIA, type CategoriaItem } from '../tiposLoja'
 
 export interface Perfil {
   id: string
   papel: string
+  nome?: string | null
+  avatar?: OpcaoDeAvatar | null
+  moldura?: ItemEquipado | null
+  titulo?: ItemEquipado | null
   bio?: string | null
   nivel: number | null
   conquistas: ConquistaDoPerfil[]
-  inventario: unknown[]
+  inventario: ItemDoPerfil[]
+}
+
+// R-M10 (SPEC/2026-11-19-moedas-loja-inventario.md): itens possuídos, com o que está equipado
+export interface ItemDoPerfil {
+  itemId: string
+  codigo: string
+  nome: string
+  categoria: CategoriaItem
+  equipado: boolean
 }
 
 // Contrato 7 + R-C9 (SPEC/2026-10-02-conquistas.md): conquistas desbloqueadas, com data
@@ -88,6 +106,86 @@ export interface XpDoEstudante {
 
 interface Props {
   sessao: Sessao
+}
+
+// F11-02/F11-03 (SPEC/2026-11-21-nome-avatar-moldura.md): o próprio usuário edita nome e avatar
+function EditorDeAparencia({
+  perfil,
+  aoSalvar,
+}: {
+  perfil: Perfil
+  aoSalvar: (aparencia: Aparencia) => void
+}) {
+  const [nome, setNome] = useState(perfil.nome ?? '')
+  const [avatarId, setAvatarId] = useState<string | null>(perfil.avatar?.id ?? null)
+  const [avatares, setAvatares] = useState<OpcaoDeAvatar[]>([])
+  const [erro, setErro] = useState<string | null>(null)
+  const [mensagem, setMensagem] = useState<string | null>(null)
+  const [salvando, setSalvando] = useState(false)
+
+  useEffect(() => {
+    api<{ avatares: OpcaoDeAvatar[] }>('/api/v1/avatares')
+      .then((resposta) => setAvatares(resposta.avatares))
+      .catch(() => setAvatares([]))
+  }, [])
+
+  async function salvar(evento: FormEvent) {
+    evento.preventDefault()
+    setErro(null)
+    setMensagem(null)
+    setSalvando(true)
+    try {
+      const salvo = await api<Aparencia>('/api/v1/aparencia', {
+        metodo: 'PUT',
+        corpo: { nome, avatar: avatarId },
+      })
+      setNome(salvo.nome ?? '')
+      setMensagem('Aparência salva.')
+      aoSalvar(salvo)
+    } catch (erroSalvar) {
+      setErro(mensagemDeErro(erroSalvar))
+    } finally {
+      setSalvando(false)
+    }
+  }
+
+  return (
+    <section className="editor-aparencia">
+      <h2>Aparência</h2>
+      <form onSubmit={salvar}>
+        <label htmlFor="aparencia-nome">Nome</label>
+        <input
+          id="aparencia-nome"
+          value={nome}
+          maxLength={NOME_MAXIMO}
+          required
+          autoComplete="name"
+          onChange={(evento) => setNome(evento.target.value)}
+        />
+        {avatares.length > 0 && (
+          <SeletorDeAvatar opcoes={avatares} valor={avatarId} aoMudar={setAvatarId} nomeDoGrupo="avatar-perfil" />
+        )}
+        {erro && (
+          <p role="alert" className="erro">
+            {erro}
+          </p>
+        )}
+        {mensagem && (
+          <p role="status" className="alerta alerta-sucesso">
+            {mensagem}
+          </p>
+        )}
+        <button type="submit" disabled={salvando} aria-busy={salvando}>
+          Salvar aparência
+        </button>
+        {perfil.papel === 'estudante' && (
+          <button type="button" className="botao-secundario" onClick={() => navegarParaVista('inventario')}>
+            Trocar moldura ou título
+          </button>
+        )}
+      </form>
+    </section>
+  )
 }
 
 function BlocoXp({ xp }: { xp: XpDoEstudante }) {
@@ -205,6 +303,29 @@ export function PaginaPerfil({ sessao }: Props) {
           <span className="papel-badge">Papel: {perfil.papel}</span>
         </div>
 
+        <div className="identidade-perfil">
+          <Avatar nome={perfil.nome ?? null} avatar={perfil.avatar ?? null} moldura={perfil.moldura ?? null} tamanho="lg" />
+          <div>
+            <p className="identidade-nome">{perfil.nome?.trim() ? perfil.nome : 'Sem nome ainda'}</p>
+            {perfil.titulo && <p className="identidade-titulo">{perfil.titulo.nome}</p>}
+          </div>
+        </div>
+
+        {perfil.id === sessao.usuarioId && (
+          <EditorDeAparencia
+            perfil={perfil}
+            aoSalvar={(aparencia) =>
+              setPerfil({
+                ...perfil,
+                nome: aparencia.nome,
+                avatar: aparencia.avatar,
+                moldura: aparencia.moldura,
+                titulo: aparencia.titulo,
+              })
+            }
+          />
+        )}
+
         {perfil.papel === 'professor' && (
           <form onSubmit={salvarBio}>
             <label htmlFor="bio">Bio</label>
@@ -256,8 +377,11 @@ export function PaginaPerfil({ sessao }: Props) {
               <p className="valor-vazio">Inventário vazio.</p>
             ) : (
               <ul className="lista-chips">
-                {perfil.inventario.map((item, indice) => (
-                  <li key={indice}>{typeof item === 'string' ? item : JSON.stringify(item)}</li>
+                {perfil.inventario.map((item) => (
+                  <li key={item.itemId} title={ROTULO_CATEGORIA[item.categoria]}>
+                    {item.nome}
+                    {item.equipado ? ' (equipado)' : ''}
+                  </li>
                 ))}
               </ul>
             )}
