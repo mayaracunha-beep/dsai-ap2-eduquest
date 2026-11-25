@@ -263,8 +263,10 @@ describe('privacidade (RK-07–RK-10, R-RK6, R-RK7)', () => {
 
     const oculto = await consulta(b.agente, cursoId)
     expect(oculto.body.voce).toBeNull()
-    expect((oculto.body.entradas as Entrada[]).some((e) => e.voce)).toBe(false)
-    expect(JSON.stringify(oculto.body)).not.toContain('60')
+    expect(oculto.body.entradas).toEqual([
+      { posicao: 1, nome: 'Ada', valor: 90, voce: false },
+      { posicao: 2, nome: pseudonimo(c.id), valor: 30, voce: false },
+    ])
   })
 
   it('voltar para anônimo apaga o apelido e o rótulo volta a ser o pseudônimo', async () => {

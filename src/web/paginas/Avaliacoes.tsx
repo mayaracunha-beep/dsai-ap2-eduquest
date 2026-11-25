@@ -1,5 +1,6 @@
 import { FormEvent, useCallback, useEffect, useState } from 'react'
 import { api, mensagemDeErro } from '../cliente'
+import { DesempenhoAvaliacao } from './DesempenhoAvaliacao'
 import {
   AvisoConquistas,
   AvisoXp,
@@ -49,6 +50,7 @@ interface TentativaEnvio {
 
 interface Props {
   avaliacaoId: string
+  podeVerDesempenho?: boolean
   tituloCurso: string
   aoVoltar: () => void
   sessao: { papel: string }
@@ -77,7 +79,7 @@ function classeStatus(status: string): string {
   return status === 'corrigida' ? 'badge-sucesso' : 'badge-aviso'
 }
 
-export function AvaliacaoDetalhe({ avaliacaoId, tituloCurso, aoVoltar, sessao }: Props) {
+export function AvaliacaoDetalhe({ avaliacaoId, podeVerDesempenho, tituloCurso, aoVoltar, sessao }: Props) {
   const [avaliacao, setAvaliacao] = useState<AvaliacaoLida | null>(null)
   const [resultado, setResultado] = useState<ResultadoLida | null>(null)
   const [erro, setErro] = useState<string | null>(null)
@@ -154,6 +156,8 @@ export function AvaliacaoDetalhe({ avaliacaoId, tituloCurso, aoVoltar, sessao }:
           {erro}
         </p>
       )}
+
+      {podeVerDesempenho && <DesempenhoAvaliacao key={avaliacaoId} avaliacaoId={avaliacaoId} />}
 
       {!dentroDaJanela ? (
         <div className="estado-vazio">

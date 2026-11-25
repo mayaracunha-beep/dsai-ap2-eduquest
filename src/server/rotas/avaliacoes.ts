@@ -3,6 +3,7 @@ import { exigirPapel, exigirSessao } from '../middlewares/sessao'
 import {
   corrigirDissertativa,
   criarAvaliacao,
+  desempenhoPorQuestao,
   editarAvaliacao,
   excluirAvaliacao,
   lerAvaliacao,
@@ -28,6 +29,10 @@ rotasAvaliacoes.get('/cursos/:id/avaliacoes', exigirSessao, async (req, res) => 
 rotasAvaliacoes.get('/avaliacoes/:id', exigirSessao, async (req, res) => {
   const avaliacao = await lerAvaliacao(req.usuario!, req.params.id)
   res.status(200).json(avaliacao)
+})
+
+rotasAvaliacoes.get('/avaliacoes/:id/desempenho', exigirSessao, exigirPapel('professor'), async (req, res) => {
+  res.json(await desempenhoPorQuestao(req.usuario!, req.params.id))
 })
 
 rotasAvaliacoes.patch('/avaliacoes/:id', exigirSessao, async (req, res) => {

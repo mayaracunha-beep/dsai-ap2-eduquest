@@ -323,6 +323,7 @@ function DetalheCurso({ sessao, cursoId, aoVoltar }: PropsCurso) {
     return (
       <AvaliacaoDetalhe
         avaliacaoId={avaliacaoAberta}
+        podeVerDesempenho={sessao.papel === 'professor' && curso.donoId === sessao.usuarioId}
         tituloCurso={curso.titulo}
         aoVoltar={voltar}
         sessao={sessao}
