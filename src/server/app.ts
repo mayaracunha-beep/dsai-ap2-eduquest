@@ -9,6 +9,7 @@ import { rotasAparencia } from './rotas/aparencia'
 import { rotasAuth } from './rotas/auth'
 import { rotasAvaliacoes } from './rotas/avaliacoes'
 import { rotasCatalogo } from './rotas/catalogo'
+import { rotasCertificados } from './rotas/certificados'
 import { rotasLoja } from './rotas/loja'
 import { rotasMissoes } from './rotas/missoes'
 import { rotasNotificacoes } from './rotas/notificacoes'
@@ -40,6 +41,7 @@ export function criarApp() {
 
   app.use('/api/v1/perfis', rotasPerfis)
   app.use('/api/v1', rotasCatalogo)
+  app.use('/api/v1', rotasCertificados)
   app.use('/api/v1', rotasQuestoes)
   app.use('/api/v1', rotasAvaliacoes)
   app.use('/api/v1', rotasXp)

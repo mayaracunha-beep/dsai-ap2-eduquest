@@ -671,3 +671,24 @@ model PreferenciaNotificacao {
   @@id([usuario_id, tipo])
   @@map("preferencia_notificacao")
 }
+
+model RequisitoCertificado {
+  curso_id     String   @id @db.Uuid
+  percentual   Int
+  avaliacao_id String?  @db.Uuid
+  nota_minima  Decimal? @db.Decimal(4, 2)
+
+  @@map("requisito_certificado")
+}
+
+model Certificado {
+  codigo      String   @id @db.Uuid
+  curso_id    String   @db.Uuid
+  usuario_id  String   @db.Uuid
+  estudante   String   @db.Text
+  curso       String   @db.Text
+  emitido_em  DateTime @default(now())
+
+  @@unique([curso_id, usuario_id])
+  @@map("certificado")
+}

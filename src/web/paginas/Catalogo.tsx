@@ -12,6 +12,7 @@ import {
 import { SecaoXpCurso } from './ConfiguracaoXp'
 import { QuestoesModulo } from './Questoes'
 import { AvaliacaoDetalhe } from './Avaliacoes'
+import { CertificadoCurso } from './CertificadoCurso'
 
 interface ResumoCurso {
   id: string
@@ -422,6 +423,10 @@ function DetalheCurso({ sessao, cursoId, aoVoltar }: PropsCurso) {
           {totalAulas} {totalAulas === 1 ? 'aula' : 'aulas'}
         </p>
       </div>
+
+      {(sessao.papel === 'estudante' || sessao.papel === 'administrador' || curso.donoId === sessao.usuarioId) && (
+        <CertificadoCurso key={curso.id} cursoId={curso.id} podeConfigurar={sessao.papel !== 'estudante'} />
+      )}
 
       {sessao.papel === 'estudante' && curso.progresso && (
         <section className="bloco-progresso" aria-label="Seu progresso">
