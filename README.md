@@ -195,7 +195,7 @@ Não existe pasta `diario/` neste repositório.
 - **Painel do estudante e acessibilidade (evolução de D2, AP2): implementados** — `SPEC/2026-11-19-painel-acessibilidade.md`: `GET /api/v1/painel` (F10-01) reúne, sem fórmulas novas, o nível e o XP, o saldo de moedas, até 3 missões em andamento (prazo mais próximo primeiro), conquistas recentes, avisos não lidos, a posição no ranking semanal (respeitando a privacidade) e até 3 cursos em andamento com o mesmo percentual do catálogo; página **Painel** como primeiro item do menu do estudante. Acessibilidade: link "Pular para o conteúdo", foco movido ao título e título do documento atualizado a cada troca de página, anúncio em região `aria-live` e teste automático de contraste WCAG AA sobre os tokens reais do CSS (PN-01–PN-09, AC-01–AC-03). Auditoria com leitor de tela real e tema escuro seguem pendentes.
 - **Nome, avatar e moldura (evolução de D1/D2 e D12, AP2): implementados** — `SPEC/2026-11-21-nome-avatar-moldura.md`: o cadastro pede o nome e oferece um avatar de um catálogo fixo de 12 opções (sem envio de imagem); `GET /api/v1/avatares` (público), `GET` e `PUT /api/v1/aparencia` (F11-01–F11-03); o perfil (contrato 7) passa a trazer `nome`, `avatar`, `moldura` e `titulo`, e a moldura equipada na loja aparece em volta do avatar, no perfil e no cabeçalho. O nome nunca aparece nos rankings (R-RK6 continua valendo) e o e-mail continua fora de qualquer perfil (AV-01–AV-12). Foto de perfil e avatar nos rankings seguem pendentes.
 - **Suíte: 611 testes passando** em 42 arquivos (`npm test`); **`npm run typecheck` e `npm run build` passando** (verificados em 2026-11-19).
-- **Deploy:** aplicação publica na URL da [§15](#15-deploy-url-pública) — **Render** (Blueprint `render.yaml` + Docker + PostgreSQL gerenciado); migrations aplicadas automaticamente por `npx prisma migrate deploy` na subida do container e seed via `initialDeployHook` no primeiro deploy.
+- **Deploy:** o Blueprint da AP2 usa Docker e PostgreSQL gerenciado no Render. O container aplica as migrações na inicialização. A [§15](#15-deploy-url-pública) reúne a configuração da AP2 e a referência histórica da AP1.
 - **Contagem de código (`cloc`, 2026-10-01):** **10.049 linhas** em 69 arquivos (TypeScript 8.423, CSS 1.037, Prisma 289, SQL 258, Dockerfile 24, HTML 18), com `cloc . --vcs=git --exclude-dir=node_modules,vendor,dist,build,prompts --exclude-lang=Markdown,JSON,YAML,CSV,Text,SVG --not-match-f='(lock|\.min\.)'`.
 - **DP-19 resolvida:** `SPEC/2026-09-30-conteudo-aula.md` **aprovada** após auditoria (§13 da SPEC); `PLAN.md`, `TASKS.md` (T2.3), `decisoes-pendentes.md` e SPEC D3 revisados formalmente. Pendências derivadas abertas: P-18–P-21.
 - **DP-18 resolvida na parcela D8:** SPEC de D8 `SPEC/2026-10-02-conquistas.md` **aprovada** (catálogo fixo de 10 conquistas, critérios sobre o estado verificado, desbloqueio permanente e idempotente, sem recompensa na F5); `PLAN.md`, `TASKS.md` (T5.5, T5.6) e `decisoes-pendentes.md` revisados. Parcelas D9/D10/D12 seguem abertas.
@@ -287,7 +287,9 @@ Não há estratégia de branches definida neste projeto — siga o fluxo acima n
 
 **URL pública (AP1):** `https://eduquest-n1jj.onrender.com/`
 
-Como está publicado (Render, verificado em 2026-10-01):
+O [Blueprint da AP2](render.yaml) aponta para a `main` do fork e define o serviço `eduquest-ap2` e o banco `eduquest-ap2-db`. Ative-o em um workspace Render com acesso ao fork. Confirme o SHA do deploy no painel e teste `/api/v1/health` na URL atribuída ao serviço. Para importar os cursos, execute `npm run db:importar-cursos -- <e-mail-do-professor>` em um ambiente com acesso ao banco da AP2, usando uma conta de professor já provisionada.
+
+Referência histórica da publicação da AP1 no Render (verificada em 2026-10-01):
 
 - **Plataforma:** Render — Web Service `eduquest` + PostgreSQL gerenciado `eduquest-db`, provisionados pelo Blueprint `render.yaml` conectado ao repositório no GitHub (cada push no `main` sincroniza o Blueprint).
 - **Build:** Dockerfile multi-stage (estágios `dependencias`, `build`, `runtime`): `npm ci` → `prisma generate` → `npm run build` (API + SPA); imagem final `node:24-slim` com `openssl` (engines Prisma `debian-openssl-3.0.x`), contendo `dist/`, `src/`, `prisma/` e `node_modules`.
@@ -299,7 +301,7 @@ Como está publicado (Render, verificado em 2026-10-01):
 - **Limitações do plano gratuito:** o serviço entra em sono por inatividade (a primeira requisição após o sono leva alguns segundos); sem Shell no container — comandos pontuais (seed manual, consultas) rodam na própria máquina com o `DATABASE_URL` da área do serviço, nunca comandos destrutivos (`migrate reset`, `db push --force-reset`).
 - **Desenvolvimento local:** a stack `docker compose` (`db`, `app`, `caddy`, portas restritas a `127.0.0.1`) segue como ambiente de dev/teste — os testes (`npm test`) dependem dela.
 
-Contas de demonstração (criadas pelo seed de `prisma/seed.ts`, senha `Eduquest#Dev2026`):
+Contas de demonstração para o ambiente de desenvolvimento (criadas pelo seed de `prisma/seed.ts`, senha `Eduquest#Dev2026`). O seed recusa execução em produção:
 
 | Papel | E-mail |
 |---|---|
