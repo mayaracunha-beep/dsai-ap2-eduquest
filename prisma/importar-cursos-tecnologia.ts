@@ -26,6 +26,7 @@ async function importar(email: string | undefined) {
     const avaliacoes: string[] = []
     for (const curso of materiais) {
       const cursoId = idDoCatalogo(curso.slug)
+      const arquivoId = idDoCatalogo(`${curso.slug}:pdf`)
       const insercao = await tx.curso.createMany({
         data: { id: cursoId, titulo: curso.titulo, publicado: true, dono_id: professor.id },
         skipDuplicates: true,
@@ -41,7 +42,6 @@ async function importar(email: string | undefined) {
             aulas: {
               create: curso.aulas.map(([titulo, texto], indice) => {
                 const chaveAula = `${curso.slug}:aula:${indice + 1}`
-                const arquivoId = idDoCatalogo(`${curso.slug}:pdf`)
                 return {
                   id: idDoCatalogo(chaveAula),
                   titulo,
@@ -63,7 +63,7 @@ async function importar(email: string | undefined) {
                         id: idDoCatalogo(`${chaveAula}:anexo`),
                         tipo: 'material_anexo' as const,
                         posicao: 1,
-                        dados: { arquivoId },
+                        dados: { arquivoId, nome: curso.nome, mime: 'application/pdf', tamanho: curso.pdf.length },
                       }] : []),
                     ],
                   },
@@ -73,6 +73,22 @@ async function importar(email: string | undefined) {
           },
         })
         criados.push(curso.titulo)
+      } else {
+        // Completa apenas o bloco legado criado pelo importador com referência sem metadados.
+        const arquivo = await tx.arquivo.findUnique({
+          where: { id: arquivoId },
+          select: { nome: true, mime: true, tamanho: true },
+        })
+        if (arquivo) {
+          await tx.conteudoAula.updateMany({
+            where: {
+              id: idDoCatalogo(`${curso.slug}:aula:1:anexo`),
+              tipo: 'material_anexo',
+              dados: { equals: { arquivoId } },
+            },
+            data: { dados: { arquivoId, ...arquivo } },
+          })
+        }
       }
 
       const avaliacaoId = idDoCatalogo(`${curso.slug}:avaliacao-final`)
