@@ -16,7 +16,8 @@
     "db:generate": "prisma generate",
     "db:seed": "prisma db seed",
     "db:up": "docker compose up -d db",
-    "db:down": "docker compose down"
+    "db:down": "docker compose down",
+    "db:importar-cursos": "tsx prisma/importar-cursos-tecnologia.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
