@@ -1866,3 +1866,56 @@ main:focus {
   max-width: 32rem;
   margin-bottom: var(--esp-6);
 }
+
+.certificado-eduquest {
+  margin-block: var(--esp-4);
+  padding: clamp(1.25rem, 5vw, 3rem);
+  border: 4px double #1d4ed8;
+  border-radius: var(--raio-s);
+  background: #fff;
+  color: #172554;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+.certificado-marca,
+.certificado-curso {
+  color: #0f766e;
+  font-weight: var(--peso-forte);
+}
+
+.certificado-nome {
+  border-top: 2px solid #b45309;
+  padding-top: var(--esp-4);
+  font-size: clamp(1.5rem, 4vw, 2.25rem);
+  font-weight: var(--peso-forte);
+}
+
+@media print {
+  body:has(.certificado-eduquest) * {
+    visibility: hidden;
+  }
+
+  body:has(.certificado-eduquest) .certificado-eduquest,
+  body:has(.certificado-eduquest) .certificado-eduquest * {
+    visibility: visible;
+  }
+
+  .certificado-eduquest {
+    position: absolute;
+    inset: 0 0 auto;
+    margin: 0;
+  }
+}
+
+.certificado-selo {
+  display: grid;
+  place-items: center;
+  margin: var(--esp-3) auto;
+  width: 2.75rem;
+  height: 2.75rem;
+  border: 2px solid #b45309;
+  border-radius: 50%;
+  color: #92400e;
+  background: #fffbeb;
+}
