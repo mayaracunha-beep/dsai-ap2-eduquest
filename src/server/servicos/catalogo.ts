@@ -300,6 +300,47 @@ async function progressoDoCurso(
   }
 }
 
+export async function relatorioProgressoDoCurso(usuario: UsuarioSessao, id: unknown) {
+  if (usuario.papel !== 'professor') throw erroProibido('Acesso restrito ao professor dono do curso')
+  if (typeof id !== 'string' || !uuidValido.test(id)) throw erroNaoEncontrado('Curso nao encontrado')
+  const curso = await prisma.curso.findUnique({
+    where: { id },
+    select: { dono_id: true },
+  })
+  if (!curso) throw erroNaoEncontrado('Curso nao encontrado')
+  if (curso.dono_id !== usuario.id) throw erroProibido('Acesso restrito ao professor dono do curso')
+
+  const aulas = await prisma.aula.findMany({
+    where: { publicado: true, modulo: { curso_id: id, publicado: true } },
+    select: {
+      conclusoes: {
+        where: { usuario: { papel: 'estudante' } },
+        select: { usuario: { select: { id: true, nome: true } } },
+      },
+    },
+  })
+  const porEstudante = new Map<string, { nome: string; aulasConcluidas: number }>()
+  for (const aula of aulas) {
+    for (const { usuario: estudante } of aula.conclusoes) {
+      const linha = porEstudante.get(estudante.id)
+      if (linha) {
+        linha.aulasConcluidas += 1
+      } else {
+        porEstudante.set(estudante.id, {
+          nome: estudante.nome ?? 'Estudante sem nome',
+          aulasConcluidas: 1,
+        })
+      }
+    }
+  }
+  return Array.from(porEstudante, ([estudanteId, linha]) => ({
+    estudanteId,
+    ...linha,
+    aulasTotal: aulas.length,
+    percentual: percentualDe(linha.aulasConcluidas, aulas.length),
+  })).sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR') || a.estudanteId.localeCompare(b.estudanteId))
+}
+
 export async function lerCurso(usuario: UsuarioSessao, id: unknown): Promise<CursoComEstrutura> {
   const curso =
     typeof id === 'string' && uuidValido.test(id)
